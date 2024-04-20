@@ -59,7 +59,7 @@ public class BattleshipClient extends Application{
 
 	private Scene createClientScene() {
 		mainBox = new VBox(10);
-		label = new Label("Funky Wunky Text Server");
+		label = new Label("not a server");
 		textField = new TextField();
 
 
