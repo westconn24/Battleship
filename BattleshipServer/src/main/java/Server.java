@@ -52,6 +52,10 @@ public class Server{
 				callback.accept("Server socket did not launch");
 			}
 		}//end of while
+
+		public synchronized int getNumberOfConnectedClients() {
+			return clients.size();
+		}
 	}
 
 
@@ -90,23 +94,31 @@ public class Server{
 			}
 
 			updateClients("new client on server: client #"+count);
-
-			while(true) {
+			while (true) {
 				try {
-					String data = in.readObject().toString();
-					callback.accept("client: " + count + " sent: " + data);
-					updateClients("client #"+count+" said: "+data);
-
-				}
-				catch(Exception e) {
+					Object data = in.readObject();
+					if (data instanceof String && ((String) data).equals("GET_PLAYER_COUNT")) {
+						// The client has requested the player count
+						int numClients = server.getNumberOfConnectedClients();
+						out.writeObject(numClients);  // Send the count to the requesting client
+						out.flush();
+					} else {
+						callback.accept("client: " + count + " sent: " + data);
+						updateClients("client #"+count+" said: "+data);
+						// Handle other messages as usual
+						// ...
+					}
+				} catch (Exception e) {
 					callback.accept("OOOOPPs...Something wrong with the socket from client: " + count + "....closing down!");
 					updateClients("Client #"+count+" has left the server!");
 					clients.remove(this);
 					break;
 				}
 			}
+
 		}//end of run
 
 
 	}//end of client thread
+
 }

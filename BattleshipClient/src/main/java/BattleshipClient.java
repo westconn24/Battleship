@@ -132,7 +132,19 @@ public class BattleshipClient extends Application{
 		// Create two buttons
 		Button leftButton = new Button("Player");
 		leftButton.setOnAction(e -> {
+			 // This method needs to be implemented
 			connectToServer();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+            int numberOfConnectedPlayers = checkNumberOfConnectedPlayers();
+			if (numberOfConnectedPlayers % 2 == 1) {
+
+			} else {
+				primaryStage.setScene(createWaitingScene());
+			}
 		});
 		Button rightButton = new Button("CPU");
 		leftButton.setStyle(
@@ -214,6 +226,10 @@ public class BattleshipClient extends Application{
 		return new Scene(pane, 1350, 650);
 	}
 
+	private int checkNumberOfConnectedPlayers() {
+		return clientConnection.checkPlayerCount();
+	}
+
 
 	private void connectToServer() {
 		// Create the client with a callback to handle messages received from the server
@@ -232,6 +248,20 @@ public class BattleshipClient extends Application{
 		clientConnection.start();
 	}
 
+
+	private Scene createWaitingScene() {
+		BorderPane waitingPane = new BorderPane();
+		setBackground(waitingPane, "spaceback.jpg");
+
+		Label waitingLabel = new Label("Please wait for an opponent to connect...");
+		waitingLabel.setFont(new Font("Arial", 24));
+		waitingLabel.setStyle("-fx-text-fill: white;");
+
+		StackPane.setAlignment(waitingLabel, Pos.CENTER);
+		waitingPane.setCenter(waitingLabel);
+
+		return new Scene(waitingPane, 1350, 650);
+	}
 
 
 }
