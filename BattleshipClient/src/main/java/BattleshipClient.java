@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
@@ -38,7 +42,7 @@ public class BattleshipClient extends Application{
 	private HashMap<String, Scene> scenes;
 	private VBox mainBox;
 	private HBox buttonBox;
-
+    Client clientConnection;
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -127,6 +131,9 @@ public class BattleshipClient extends Application{
 
 		// Create two buttons
 		Button leftButton = new Button("Player");
+		leftButton.setOnAction(e -> {
+			connectToServer();
+		});
 		Button rightButton = new Button("CPU");
 		leftButton.setStyle(
 				"-fx-font-size: 34px; " +  // Larger font size
@@ -205,6 +212,24 @@ public class BattleshipClient extends Application{
 		BorderPane.setAlignment(backButton, Pos.CENTER);
 
 		return new Scene(pane, 1350, 650);
+	}
+
+
+	private void connectToServer() {
+		// Create the client with a callback to handle messages received from the server
+		clientConnection = new Client(data -> {
+			// Since the data is of type Serializable, ensure proper handling
+			if (data != null) {
+				Platform.runLater(() -> {
+					// Here you can update the UI or process the data received
+					// For example, appending the data to a ListView or just printing it
+					System.out.println(data.toString());
+				});
+			}
+		});
+
+		// Start the client thread to listen for messages from the server
+		clientConnection.start();
 	}
 
 

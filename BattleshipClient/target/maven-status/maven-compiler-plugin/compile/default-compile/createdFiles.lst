@@ -1,3 +1,4 @@
 Message.class
 Client.class
 BattleshipClient.class
+GameBoard.class

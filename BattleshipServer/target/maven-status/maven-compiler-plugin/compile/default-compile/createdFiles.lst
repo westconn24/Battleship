@@ -1,7 +1,6 @@
 BattleshipServer.class
-BattleshipServer$1$1.class
-Server$ClientThread.class
-BattleshipServer$1.class
 Server.class
 Message.class
+Server$ClientThread.class
 Server$TheServer.class
+BattleshipServer$1.class
