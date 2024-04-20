@@ -139,12 +139,12 @@ public class BattleshipClient extends Application{
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
-            int numberOfConnectedPlayers = checkNumberOfConnectedPlayers();
-			if (numberOfConnectedPlayers % 2 == 1) {
+//            int numberOfConnectedPlayers = checkNumberOfConnectedPlayers();
+//			if (numberOfConnectedPlayers % 2 == 1) {
 
-			} else {
-				primaryStage.setScene(createWaitingScene());
-			}
+//			} else {
+//				primaryStage.setScene(createWaitingScene());
+//			}
 		});
 		Button rightButton = new Button("CPU");
 		leftButton.setStyle(
@@ -226,9 +226,7 @@ public class BattleshipClient extends Application{
 		return new Scene(pane, 1350, 650);
 	}
 
-	private int checkNumberOfConnectedPlayers() {
-		return clientConnection.checkPlayerCount();
-	}
+
 
 
 	private void connectToServer() {

@@ -42,21 +42,7 @@ public class Client extends Thread{
 		}
 
 	}
-	public int checkPlayerCount() {
-		try {
-			out.writeObject("GET_PLAYER_COUNT");
-			out.flush();
-			Object response = in.readObject();
-			if (response instanceof Integer) {
-				int playerCount = (Integer) response;
-				callback.accept(playerCount);  // Now callback should accept Integer too
-				return playerCount;
-			}
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
+
 	public void send(String data) {
 
 		try {
