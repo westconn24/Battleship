@@ -8,7 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="JavaFXGUIServer" />
         <module name="Project3" />
-        <module name="Project3Client" />
+        <module name="BattleshipClient" />
       </profile>
     </annotationProcessing>
   </component>
