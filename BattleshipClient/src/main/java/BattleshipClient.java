@@ -1,37 +1,20 @@
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Shape;
 import javafx.scene.image.Image;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import javafx.util.Duration;
-
-
-import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.circle;
 
 public class BattleshipClient extends Application{
 
@@ -145,6 +128,9 @@ public class BattleshipClient extends Application{
 			clientConnection.send("getClientCount");
 		});
 		Button rightButton = new Button("CPU");
+		rightButton.setOnAction(e -> {
+			primaryStage.setScene(chooseScene());
+		});
 		leftButton.setStyle(
 				"-fx-font-size: 34px; " +  // Larger font size
 						"-fx-font-weight: bold; " +  // Bold font
@@ -265,5 +251,48 @@ public class BattleshipClient extends Application{
 			primaryStage.setScene(createWaitingScene());
 		});
 	}
+
+	private Scene chooseScene() {
+		// Set the background for the pane
+		BorderPane pane = new BorderPane();
+		setBackground(pane, "spaceback.jpg");
+
+		GridPane grid = new GridPane();
+		grid.setPadding(new Insets(10, 10, 10, 10)); // Margin around the grid
+		grid.setVgap(5); // Vertical gap between buttons
+		grid.setHgap(5); // Horizontal gap between buttons
+		grid.setAlignment(Pos.CENTER); // Center alignment for the GridPane within the BorderPane
+
+		// Create buttons and add them to the grid
+		for (int row = 0; row < 10; row++) {
+			for (int col = 0; col < 10; col++) {
+				Button button = new Button();
+				button.setPrefSize(45, 45); // Increased size by 15pt
+				button.setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;"); // Transparent background with a white outline
+				int finalRow = row;
+				int finalCol = col;
+				button.setOnAction(e -> handleButtonAction(finalRow, finalCol));
+				grid.add(button, col, row);
+			}
+		}
+
+		// Adding the grid to the center of the BorderPane
+		pane.setCenter(grid);
+
+		// Back button at the bottom
+		Button backButton = new Button("Back to Main");
+		backButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: black; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 15; -fx-border-color: #afb0b3; -fx-border-width: 4; -fx-border-radius: 5; -fx-font-family: 'Lucida Fax'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+		backButton.setOnAction(e -> primaryStage.setScene(openScene()));
+		pane.setBottom(backButton);
+		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
+
+		return new Scene(pane, 1350, 650);
+	}
+
+	private void handleButtonAction(int row, int col) {
+		// Implement your action on button click, e.g., placing a ship or making a guess
+		System.out.println("Button clicked at row " + row + ", col " + col);
+	}
+
 
 }
