@@ -42,6 +42,7 @@ public class BattleshipClient extends Application{
 	private HashMap<String, Scene> scenes;
 	private VBox mainBox;
 	private HBox buttonBox;
+	private Stage primaryStage;
     Client clientConnection;
 	public static void main(String[] args) {
 		launch(args);
@@ -49,12 +50,13 @@ public class BattleshipClient extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		primaryStage.setScene(openScene(primaryStage));
+		this.primaryStage = primaryStage; // Store primaryStage in the instance variable
+		primaryStage.setScene(openScene());
 		primaryStage.setTitle("Battleship Client");
 		primaryStage.show();
 	}
 
-	private Scene openScene(Stage primaryStage) {
+	private Scene openScene() {
 		VBox layout = new VBox(10);
 		layout.setAlignment(Pos.CENTER);
 
@@ -126,25 +128,21 @@ public class BattleshipClient extends Application{
 
 		// Create label and style it
 		Label choiceLabel = new Label("Choose who to play");
-		choiceLabel.setFont(new Font("Constantia", 30));  // Use Constantia font
+		choiceLabel.setFont(new Font("Constantia", 30));
 		choiceLabel.setStyle("-fx-text-fill: white; -fx-padding: 10;");
 
-		// Create two buttons
+
 		Button leftButton = new Button("Player");
 		leftButton.setOnAction(e -> {
-			 // This method needs to be implemented
+
 			connectToServer();
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
-//            int numberOfConnectedPlayers = checkNumberOfConnectedPlayers();
-//			if (numberOfConnectedPlayers % 2 == 1) {
 
-//			} else {
-//				primaryStage.setScene(createWaitingScene());
-//			}
+			clientConnection.send("getClientCount");
 		});
 		Button rightButton = new Button("CPU");
 		leftButton.setStyle(
@@ -206,7 +204,7 @@ public class BattleshipClient extends Application{
 
 		// Back button at the bottom
 		Button backButton = new Button("Back to Main");
-		backButton.setOnAction(e -> primaryStage.setScene(openScene(primaryStage)));
+		backButton.setOnAction(e -> primaryStage.setScene(openScene()));
 		backButton.setStyle(
 				"-fx-font-size: 15px; " +  // Larger font size
 						"-fx-font-weight: bold; " +  // Bold font
@@ -234,20 +232,22 @@ public class BattleshipClient extends Application{
 		clientConnection = new Client(data -> {
 			// Since the data is of type Serializable, ensure proper handling
 			if (data != null) {
-				Platform.runLater(() -> {
-					// Here you can update the UI or process the data received
-					// For example, appending the data to a ListView or just printing it
-					System.out.println(data.toString());
-				});
+				if (data.equals("OddCount")) {
+					Platform.runLater(() -> {
+						primaryStage.setScene(createWaitingScene());
+					});
+				}
+				// Handle other messages if needed
 			}
-		});
+		}, this);
 
 		// Start the client thread to listen for messages from the server
 		clientConnection.start();
 	}
 
 
-	private Scene createWaitingScene() {
+
+	Scene createWaitingScene() {
 		BorderPane waitingPane = new BorderPane();
 		setBackground(waitingPane, "spaceback.jpg");
 
@@ -260,6 +260,10 @@ public class BattleshipClient extends Application{
 
 		return new Scene(waitingPane, 1350, 650);
 	}
-
+	public void showWaitingScene() {
+		Platform.runLater(() -> {
+			primaryStage.setScene(createWaitingScene());
+		});
+	}
 
 }

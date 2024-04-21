@@ -1,3 +1,5 @@
+import javafx.application.Platform;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,7 +18,12 @@ public class Client extends Thread{
 	ObjectInputStream in;
 
 	private Consumer<Serializable> callback;
+	private BattleshipClient battleshipClient; // Reference to BattleshipClient instance
 
+	Client(Consumer<Serializable> call, BattleshipClient battleshipClient) {
+		callback = call;
+		this.battleshipClient = battleshipClient; // Initialize reference
+	}
 	Client(Consumer<Serializable> call){
 
 		callback = call;
@@ -37,6 +44,11 @@ public class Client extends Thread{
 			try {
 				String message = in.readObject().toString();
 				callback.accept(message);
+				if (message.equals("OddCount")) {
+					Platform.runLater(() -> {
+						battleshipClient.showWaitingScene();
+					});
+				}
 			}
 			catch(Exception e) {}
 		}
@@ -53,5 +65,7 @@ public class Client extends Thread{
 		}
 	}
 
-
+	private void triggerSceneChange() {
+		battleshipClient.showWaitingScene(); // Call method in BattleshipClient to switch scene
+	}
 }
