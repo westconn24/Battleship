@@ -157,7 +157,7 @@ public class BattleshipClient extends Application{
 					 cellButton upTwo = (cellButton) grid.getChildren().get(((row - 2) * 10) + col);
 					 cellButton downOne = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
 					 cellButton downTwo = (cellButton) grid.getChildren().get(((row + 2) * 10) + col);
-					 if ((!upOne.emptyStatus) || (!upTwo.emptyStatus) || (!downOne.emptyStatus) || (!downTwo.emptyStatus)) {
+					 if ((!upOne.emptyStatus) || (!upTwo.emptyStatus) || (!downOne.emptyStatus) || (!downTwo.emptyStatus) || (!currButton.emptyStatus)) {
 						 grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 					 } else {
 						 grid.getChildren().get(((row - 2) * 10) + col).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
@@ -171,37 +171,7 @@ public class BattleshipClient extends Application{
 					 grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 				 }
 			}
-			else if (game.currPieceIndex == 1) { //we're setting a 4-cell piece
-				cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
-				cellButton leftTwo = (cellButton) grid.getChildren().get((row * 10) + col - 2);
-				cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
-				if ((col < 2) || (!leftOne.emptyStatus) || (!leftTwo.emptyStatus) || (!rightOne.emptyStatus) || (9 - col < 1)) {
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-				} else {
-					grid.getChildren().get((row * 10) + col - 2).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col - 1).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('MidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-				}
-			} else if (game.currPieceIndex == 2 || game.currPieceIndex == 3) { //we're setting a 3-cell piece
-				cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
-				cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
-				if ((col == 0) || (!leftOne.emptyStatus) || (!rightOne.emptyStatus) || (col == 9)) {
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-				} else {
-					grid.getChildren().get((row * 10) + col - 1).setStyle("-fx-background-image: url('HorizontalBack-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-				}
-			} else if (game.currPieceIndex == 4) { //we're setting a 2-cell piece
-				cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
-				if ((!rightOne.emptyStatus) || (col == 9)) {
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-				} else {
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('HorizontalBackFlag-CEll.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;  -fx-background-color: transparent;");
-				}
-			}
+
 		}
 		else {
 			if (game.currPieceIndex == 0) { //we're setting a 5-cell piece
@@ -511,38 +481,54 @@ public class BattleshipClient extends Application{
 
 	private void handleButtonClick(int row, int col, GridPane grid){
 		System.out.println("Button clicked at row " + row + ", col " + col);
-		if (game.currPieceIndex == 0){ //disabling button action while preserving css
-			cellButton temp = (cellButton)grid.getChildren().get((row * 10) + col-2);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col-1);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col+1);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col+2);
-			temp.emptyStatus = false;
-		} else if (game.currPieceIndex == 1){
-			cellButton temp = (cellButton)grid.getChildren().get((row * 10) + col-2);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col-1);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col+1);
-			temp.emptyStatus = false;
-		} else if (game.currPieceIndex == 2 ||game.currPieceIndex == 3){
-			cellButton temp = (cellButton)grid.getChildren().get((row * 10) + col-1);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col+1);
-			temp.emptyStatus = false;
-		} else if (game.currPieceIndex == 4){
-			cellButton temp = (cellButton)grid.getChildren().get((row * 10) + col);
-			temp.emptyStatus = false;
-			temp = (cellButton)grid.getChildren().get((row * 10) + col+1);
-			temp.emptyStatus = false;
+		if (game.isVertical) {
+			if (game.currPieceIndex == 0) { //disabling button action while preserving css
+				cellButton temp = (cellButton) grid.getChildren().get(((row - 2) * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row + 2) * 10) + col);
+				temp.emptyStatus = false;
+			}
+		}
+		else {
+			if (game.currPieceIndex == 0) { //disabling button action while preserving css
+				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col - 2);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col - 1);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 2);
+				temp.emptyStatus = false;
+			} else if (game.currPieceIndex == 1) {
+				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col - 2);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col - 1);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+				temp.emptyStatus = false;
+			} else if (game.currPieceIndex == 2 || game.currPieceIndex == 3) {
+				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col - 1);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+				temp.emptyStatus = false;
+			} else if (game.currPieceIndex == 4) {
+				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+				temp.emptyStatus = false;
+			}
 		}
 		game.piecePlaced();
 	}
