@@ -88,7 +88,7 @@ public class BattleshipClient extends Application{
 		setBackground(mainPane, "spaceback.jpg");
 
 
-		Image battle = new Image("battleshippng.png"); // Replace with your actual image path
+		Image battle = new Image("battleship_banner.png");
 		ImageView imageView = new ImageView(battle);
 		imageView.setPreserveRatio(true);
 		imageView.setFitHeight(500); // Set the height of the image (you can adjust this as needed)

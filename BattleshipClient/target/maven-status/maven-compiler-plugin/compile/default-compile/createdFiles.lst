@@ -1,5 +1,5 @@
-Client.class
 BattleshipClient.class
 Message.class
 BattleshipClient$cellButton.class
 BattleshipClient$boardSetup.class
+Client.class
