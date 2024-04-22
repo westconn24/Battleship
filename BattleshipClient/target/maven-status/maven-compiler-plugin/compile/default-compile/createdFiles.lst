@@ -1,5 +1,5 @@
-Ship.class
 Client.class
 BattleshipClient.class
-GameBoard.class
 Message.class
+BattleshipClient$cellButton.class
+BattleshipClient$boardSetup.class
