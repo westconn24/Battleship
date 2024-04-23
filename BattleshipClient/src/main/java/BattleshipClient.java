@@ -653,35 +653,35 @@ public class BattleshipClient extends Application{
 		}
 	}
 	private Scene createGameScene() {
-		// Create the main layout pane
+
 		BorderPane mainLayout = new BorderPane();
 		setBackground(mainLayout, "battlebackground.png");
 
-		// Create the container for both boards
+
 		HBox boardsContainer = new HBox(80);
 		boardsContainer.setAlignment(Pos.CENTER);
 		boardsContainer.setPadding(new Insets(50, 0, 0, 0));
 
-		// Initialize the two boards
+
 		GridPane leftBoard = new GridPane();
-		leftBoard.setHgap(5); // Horizontal gap between buttons
-		leftBoard.setVgap(5); // Vertical gap between buttons
+		leftBoard.setHgap(5);
+		leftBoard.setVgap(5);
 		leftBoard.setAlignment(Pos.CENTER);
 
 		GridPane rightBoard = new GridPane();
-		rightBoard.setHgap(5); // Horizontal gap between buttons
-		rightBoard.setVgap(5); // Vertical gap between buttons
+		rightBoard.setHgap(5);
+		rightBoard.setVgap(5);
 		rightBoard.setAlignment(Pos.CENTER);
 
-		// Configure buttons and add them to each board
+
 		for (int row = 0; row < 10; row++) {
 			for (int col = 0; col < 10; col++) {
 				cellButton leftButton = new cellButton();
-				leftButton.setPrefSize(40, 40); // Set preferred size to maintain square shape
+				leftButton.setPrefSize(40, 40);
 				leftButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
 
 				cellButton rightButton = new cellButton();
-				rightButton.setPrefSize(40, 40); // Set preferred size to maintain square shape
+				rightButton.setPrefSize(40, 40);
 				rightButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
 
 				leftBoard.add(leftButton, col, row);
@@ -689,9 +689,9 @@ public class BattleshipClient extends Application{
 			}
 		}
 
-		// Add both boards to the container
+
 		boardsContainer.getChildren().addAll(leftBoard, rightBoard);
-		mainLayout.setTop(boardsContainer); // Set at the top of the BorderPane
+		mainLayout.setTop(boardsContainer);
 
 		return new Scene(mainLayout, 1350, 650);
 	}
