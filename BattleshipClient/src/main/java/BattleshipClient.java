@@ -91,7 +91,7 @@ public class BattleshipClient extends Application{
 
 
 		mainPane = new BorderPane();
-		setBackground(mainPane, "spaceback.jpg");
+		setBackground(mainPane, "battlebackground.png");
 
 
 		Image battle = new Image("battleship_banner.png");
@@ -328,7 +328,7 @@ public class BattleshipClient extends Application{
 
 	private Scene playerChoiceScene(Stage primaryStage) {
 		BorderPane pane = new BorderPane();
-		setBackground(pane, "spaceback.jpg");
+		setBackground(pane, "battlebackground.png");
 
 		// Create label and style it
 		Label choiceLabel = new Label("Choose who to play");
@@ -456,7 +456,7 @@ public class BattleshipClient extends Application{
 
 	Scene createWaitingScene() {
 		BorderPane waitingPane = new BorderPane();
-		setBackground(waitingPane, "spaceback.jpg");
+		setBackground(waitingPane, "battlebackground.png");
 
 		Label waitingLabel = new Label("Please wait for an opponent to connect...");
 		waitingLabel.setFont(new Font("Arial", 24));
@@ -477,7 +477,7 @@ public class BattleshipClient extends Application{
 		// Set the background for the pane
 		BorderPane pane = new BorderPane();
 		game = new boardSetup();
-		setBackground(pane, "spaceback.jpg");
+		setBackground(pane, "battlebackground.png");
 
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(2, 2, 2, 2)); // Margin around the grid
