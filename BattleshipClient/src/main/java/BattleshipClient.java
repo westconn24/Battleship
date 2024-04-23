@@ -776,7 +776,11 @@ public class BattleshipClient extends Application{
 			leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('HorizontalBackFlag-CEll.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('HorizontalFront-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 		}
-
+		Button backButton = new Button("Forfeit");
+		backButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: black; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 15; -fx-border-color: #afb0b3; -fx-border-width: 4; -fx-border-radius: 5; -fx-font-family: 'Lucida Fax'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+		backButton.setOnAction(e -> primaryStage.setScene(openScene()) );
+		mainLayout.setBottom(backButton);
+		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
 		boardsContainer.getChildren().addAll(leftBoard, rightBoard);
 		mainLayout.setTop(boardsContainer);
 
