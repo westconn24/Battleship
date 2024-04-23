@@ -95,7 +95,7 @@ public class BattleshipClient extends Application{
 		setBackground(mainPane, "battlebackground.png");
 
 
-		Image battle = new Image("battleship_banner.png");
+		Image battle = new Image("Banner.png");
 		ImageView imageView = new ImageView(battle);
 		imageView.setPreserveRatio(true);
 		imageView.setFitHeight(500); // Set the height of the image (you can adjust this as needed)
@@ -226,48 +226,65 @@ public class BattleshipClient extends Application{
 		}
 		else {
 			if (game.currPieceIndex == 0) { //we're setting a 5-cell piece
-				cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
-				cellButton leftTwo = (cellButton) grid.getChildren().get((row * 10) + col - 2);
-				cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
-				cellButton rightTwo = (cellButton) grid.getChildren().get((row * 10) + col + 2);
-				if ((col < 2) || (!leftOne.emptyStatus) || (!leftTwo.emptyStatus) || (!rightTwo.emptyStatus) || (!rightOne.emptyStatus) || (9 - col < 2)) {
+				if (col >= 2 && col <= 7){
 					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
+					cellButton leftTwo = (cellButton) grid.getChildren().get((row * 10) + col - 2);
+					cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+					cellButton rightTwo = (cellButton) grid.getChildren().get((row * 10) + col + 2);
+					if ( (!leftOne.emptyStatus) || (!leftTwo.emptyStatus) || (!rightTwo.emptyStatus) || (!rightOne.emptyStatus)) {
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					} else {
+						grid.getChildren().get((row * 10) + col - 2).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col - 1).setStyle("-fx-background-image: url('MidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('MidRedStar-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('MidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col + 2).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					}
 				} else {
-					grid.getChildren().get((row * 10) + col - 2).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col - 1).setStyle("-fx-background-image: url('MidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('MidRedStar-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('MidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col + 2).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 				}
 			} else if (game.currPieceIndex == 1) { //we're setting a 4-cell piece
-				cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
-				cellButton leftTwo = (cellButton) grid.getChildren().get((row * 10) + col - 2);
-				cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
-				if ((col < 2) || (!leftOne.emptyStatus) || (!leftTwo.emptyStatus) || (!rightOne.emptyStatus) || (9 - col < 1)) {
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+				if (col >=2 && col <= 8) {
+					cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
+					cellButton leftTwo = (cellButton) grid.getChildren().get((row * 10) + col - 2);
+					cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+					if ((!leftOne.emptyStatus) || (!leftTwo.emptyStatus) || (!rightOne.emptyStatus)) {
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					} else {
+						grid.getChildren().get((row * 10) + col - 2).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col - 1).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('MidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					}
 				} else {
-					grid.getChildren().get((row * 10) + col - 2).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col - 1).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('MidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 				}
 			} else if (game.currPieceIndex == 2 || game.currPieceIndex == 3) { //we're setting a 3-cell piece
-				cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
-				cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
-				if ((col == 0) || (!leftOne.emptyStatus) || (!rightOne.emptyStatus) || (col == 9)) {
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+				if (col >= 1 && col <= 8) {
+					cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
+					cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+					if ((!leftOne.emptyStatus) || (!rightOne.emptyStatus)) {
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					} else {
+						grid.getChildren().get((row * 10) + col - 1).setStyle("-fx-background-image: url('HorizontalBack-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					}
 				} else {
-					grid.getChildren().get((row * 10) + col - 1).setStyle("-fx-background-image: url('HorizontalBack-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 				}
 			} else if (game.currPieceIndex == 4) { //we're setting a 2-cell piece
 				cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
-				if ((!rightOne.emptyStatus) || (col == 9)) {
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+				if (col <= 8) {
+					if ((!rightOne.emptyStatus)) {
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					} else {
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('HorizontalBackFlag-CEll.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;  -fx-background-color: transparent;");
+					}
 				} else {
-					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('HorizontalBackFlag-CEll.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-					grid.getChildren().get((row * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;  -fx-background-color: transparent;");
+					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 				}
 			}
 		}
