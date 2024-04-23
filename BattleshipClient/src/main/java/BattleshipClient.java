@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,7 +20,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class BattleshipClient extends Application{
+public class BattleshipClient extends Application {
 	boardSetup game;
 	private TextField textField;
 	private BorderPane mainPane;
@@ -29,28 +30,29 @@ public class BattleshipClient extends Application{
 	private VBox mainBox;
 	private HBox buttonBox;
 	private Stage primaryStage;
-    Client clientConnection;
+	Client clientConnection;
 	public Ship[] ships = new Ship[5];
+
 	public static void main(String[] args) {
 		launch(args);
 	}
 
-	public class cellButton extends Button{
+	public class cellButton extends Button {
 		String shipName;
 		Boolean emptyStatus;
 
-		public cellButton(){
+		public cellButton() {
 			super();
 			shipName = "";
 			emptyStatus = true;
 		}
 
-		Boolean isEmpty(){
+		Boolean isEmpty() {
 			return emptyStatus;
 		}
 	}
 
-	private class boardSetup{
+	private class boardSetup {
 		int rows = 10;
 		int cols = 10;
 
@@ -59,10 +61,12 @@ public class BattleshipClient extends Application{
 		int currPieceIndex = 0;
 		boolean isVertical = false;
 		ArrayList<String> pieceSetup;
+
 		void toggleOrientation() {
 			isVertical = !isVertical;
 		}
-		public boardSetup(){
+
+		public boardSetup() {
 			pieceSetup = new ArrayList<>();
 			pieceSetup.add("5-cell");
 			pieceSetup.add("4-cell");
@@ -71,12 +75,17 @@ public class BattleshipClient extends Application{
 			pieceSetup.add("2-cell");
 		}
 
-		void piecePlaced(){
+		void piecePlaced() {
 			currPieceIndex++;
 		}
 
-		void setCurrHover(int row, int col){currRowHover = row; currColHover = col;}
-	};
+		void setCurrHover(int row, int col) {
+			currRowHover = row;
+			currColHover = col;
+		}
+	}
+
+	;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -139,6 +148,7 @@ public class BattleshipClient extends Application{
 
 		return new Scene(mainPane, 1350, 650);
 	}
+
 	private void setBackground(BorderPane pane, String imagePath) {
 		// Load the image
 		Image image = new Image(imagePath);
@@ -151,32 +161,31 @@ public class BattleshipClient extends Application{
 		pane.setBackground(new Background(backgroundImage));
 	}
 
-	private void setGridCellBackground(GridPane grid, int row, int col){
-		cellButton currButton = (cellButton)grid.getChildren().get((row * 10) + col);
-		if (!currButton.emptyStatus){
+	private void setGridCellBackground(GridPane grid, int row, int col) {
+		cellButton currButton = (cellButton) grid.getChildren().get((row * 10) + col);
+		if (!currButton.emptyStatus) {
 			return;
 		}
-		if(game.isVertical) {
+		if (game.isVertical) {
 			if (game.currPieceIndex == 0) { //we're setting a 5-cell piece
-				 if (row >= 2 && row <= 7) {
-					 cellButton upOne = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
-					 cellButton upTwo = (cellButton) grid.getChildren().get(((row - 2) * 10) + col);
-					 cellButton downOne = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
-					 cellButton downTwo = (cellButton) grid.getChildren().get(((row + 2) * 10) + col);
-					 if ((!upOne.emptyStatus) || (!upTwo.emptyStatus) || (!downOne.emptyStatus) || (!downTwo.emptyStatus) || (!currButton.emptyStatus)) { //Collision with other cell occupied by a boat
-						 grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-					 } else {
-						 grid.getChildren().get(((row - 2) * 10) + col).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-						 grid.getChildren().get(((row - 1) * 10) + col).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-						 grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('VertMidRedStar-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-						 grid.getChildren().get(((row + 1) * 10) + col).setStyle("-fx-background-image: url('VertMidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
-						 grid.getChildren().get(((row + 2) * 10) + col).setStyle("-fx-background-image: url('VertBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-					 }
-				 }
-				 else { //too close to border to place 5-cell boat
-					 grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-				 }
-			} else if (game.currPieceIndex == 1){
+				if (row >= 2 && row <= 7) {
+					cellButton upOne = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
+					cellButton upTwo = (cellButton) grid.getChildren().get(((row - 2) * 10) + col);
+					cellButton downOne = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
+					cellButton downTwo = (cellButton) grid.getChildren().get(((row + 2) * 10) + col);
+					if ((!upOne.emptyStatus) || (!upTwo.emptyStatus) || (!downOne.emptyStatus) || (!downTwo.emptyStatus) || (!currButton.emptyStatus)) { //Collision with other cell occupied by a boat
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					} else {
+						grid.getChildren().get(((row - 2) * 10) + col).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+						grid.getChildren().get(((row - 1) * 10) + col).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('VertMidRedStar-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row + 1) * 10) + col).setStyle("-fx-background-image: url('VertMidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row + 2) * 10) + col).setStyle("-fx-background-image: url('VertBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					}
+				} else { //too close to border to place 5-cell boat
+					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+				}
+			} else if (game.currPieceIndex == 1) {
 				if (row >= 2 && row <= 8) {
 					cellButton upOne = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
 					cellButton upTwo = (cellButton) grid.getChildren().get(((row - 2) * 10) + col);
@@ -189,11 +198,10 @@ public class BattleshipClient extends Application{
 						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 						grid.getChildren().get(((row + 1) * 10) + col).setStyle("-fx-background-image: url('VertBack-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 					}
-				}
-				else { //to close to border to place 4-cell boat
+				} else { //to close to border to place 4-cell boat
 					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 				}
-			} else if (game.currPieceIndex == 2 || game.currPieceIndex == 3){
+			} else if (game.currPieceIndex == 2 || game.currPieceIndex == 3) {
 				if (row >= 1 && row <= 8) {
 					cellButton upOne = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
 					cellButton downOne = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
@@ -204,11 +212,10 @@ public class BattleshipClient extends Application{
 						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 						grid.getChildren().get(((row + 1) * 10) + col).setStyle("-fx-background-image: url('VertBack-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 					}
-				}
-				else { //to close to border to place 3-cell boat
+				} else { //to close to border to place 3-cell boat
 					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 				}
-			} else if (game.currPieceIndex == 4){
+			} else if (game.currPieceIndex == 4) {
 				if (row >= 1) {
 					cellButton upOne = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
 					if ((!upOne.emptyStatus) || (!currButton.emptyStatus)) { //Collision with other cell occupied by a boat
@@ -217,22 +224,20 @@ public class BattleshipClient extends Application{
 						grid.getChildren().get(((row - 1) * 10) + col).setStyle("-fx-background-image: url('VertFront-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('VertBackFlag-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 					}
-				}
-				else { //to close to border to place 2-cell boat
+				} else { //to close to border to place 2-cell boat
 					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 				}
 			}
 
-		}
-		else {
+		} else {
 			if (game.currPieceIndex == 0) { //we're setting a 5-cell piece
-				if (col >= 2 && col <= 7){
+				if (col >= 2 && col <= 7) {
 					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 					cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
 					cellButton leftTwo = (cellButton) grid.getChildren().get((row * 10) + col - 2);
 					cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
 					cellButton rightTwo = (cellButton) grid.getChildren().get((row * 10) + col + 2);
-					if ( (!leftOne.emptyStatus) || (!leftTwo.emptyStatus) || (!rightTwo.emptyStatus) || (!rightOne.emptyStatus)) {
+					if ((!leftOne.emptyStatus) || (!leftTwo.emptyStatus) || (!rightTwo.emptyStatus) || (!rightOne.emptyStatus)) {
 						grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 					} else {
 						grid.getChildren().get((row * 10) + col - 2).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
@@ -245,7 +250,7 @@ public class BattleshipClient extends Application{
 					grid.getChildren().get((row * 10) + col).setStyle("-fx-background-image: url('BadCell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 				}
 			} else if (game.currPieceIndex == 1) { //we're setting a 4-cell piece
-				if (col >=2 && col <= 8) {
+				if (col >= 2 && col <= 8) {
 					cellButton leftOne = (cellButton) grid.getChildren().get((row * 10) + col - 1);
 					cellButton leftTwo = (cellButton) grid.getChildren().get((row * 10) + col - 2);
 					cellButton rightOne = (cellButton) grid.getChildren().get((row * 10) + col + 1);
@@ -290,12 +295,12 @@ public class BattleshipClient extends Application{
 		}
 	}
 
-	public void removeGridCellBackground(int row, int col, GridPane grid){
-		cellButton currButton = (cellButton)grid.getChildren().get((row * 10) + col);
-		if (!currButton.emptyStatus){
+	public void removeGridCellBackground(int row, int col, GridPane grid) {
+		cellButton currButton = (cellButton) grid.getChildren().get((row * 10) + col);
+		if (!currButton.emptyStatus) {
 			return;
 		}
-		cellButton temp = (cellButton) grid.getChildren().get((row*10)+col);
+		cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col);
 		String backgroundImage = temp.getStyle();
 		if (backgroundImage != null && backgroundImage.contains("BadCell.png")) { //only once cell has image so we only need to remove one cell background
 			System.out.println("Current background image is BadCell.png");
@@ -317,11 +322,10 @@ public class BattleshipClient extends Application{
 				grid.getChildren().get((row * 10) + col).setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;");
 				grid.getChildren().get(((row + 1) * 10) + col).setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;");
 			} else if (game.currPieceIndex == 4) {
-				grid.getChildren().get(((row-1) * 10) + col).setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;");
+				grid.getChildren().get(((row - 1) * 10) + col).setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;");
 				grid.getChildren().get((row * 10) + col).setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;");
 			}
-		}
-		else {
+		} else {
 			if (game.currPieceIndex == 0) { //we're setting a 5-cell piece
 				grid.getChildren().get((row * 10) + col - 2).setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;");
 				grid.getChildren().get((row * 10) + col - 1).setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;");
@@ -358,11 +362,11 @@ public class BattleshipClient extends Application{
 		leftButton.setOnAction(e -> {
 
 			connectToServer();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException ex) {
+				throw new RuntimeException(ex);
+			}
 
 			clientConnection.send("getClientCount");
 		});
@@ -450,8 +454,6 @@ public class BattleshipClient extends Application{
 	}
 
 
-
-
 	private void connectToServer() {
 		// Create the client with a callback to handle messages received from the server
 		clientConnection = new Client(data -> {
@@ -471,7 +473,6 @@ public class BattleshipClient extends Application{
 	}
 
 
-
 	Scene createWaitingScene() {
 		BorderPane waitingPane = new BorderPane();
 		setBackground(waitingPane, "battlebackground.png");
@@ -485,6 +486,7 @@ public class BattleshipClient extends Application{
 
 		return new Scene(waitingPane, 1350, 650);
 	}
+
 	public void showWaitingScene() {
 		Platform.runLater(() -> {
 			primaryStage.setScene(createWaitingScene());
@@ -532,7 +534,7 @@ public class BattleshipClient extends Application{
 		// Back button at the bottom
 		Button backButton = new Button("Back to Main");
 		backButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: black; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 15; -fx-border-color: #afb0b3; -fx-border-width: 4; -fx-border-radius: 5; -fx-font-family: 'Lucida Fax'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
-		backButton.setOnAction(e -> primaryStage.setScene(openScene()) );
+		backButton.setOnAction(e -> primaryStage.setScene(openScene()));
 		pane.setBottom(backButton);
 		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
 
@@ -543,26 +545,26 @@ public class BattleshipClient extends Application{
 		System.out.println("Hover called, cell empty?:");
 		System.out.println(((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus);
 		game.setCurrHover(row, col);
-		if (((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus){
+		if (((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus) {
 			setGridCellBackground(grid, row, col);
 		}
 	}
 
-	private void handleButtonExit(int row, int col, GridPane grid){
-		if (((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus){
+	private void handleButtonExit(int row, int col, GridPane grid) {
+		if (((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus) {
 			System.out.println("Emptying Cell");
 			removeGridCellBackground(row, col, grid);
 		}
 	}
 
-	private void handleButtonClick(int row, int col, GridPane grid){
+	private void handleButtonClick(int row, int col, GridPane grid) {
 		System.out.println("Button clicked at row " + row + ", col " + col);
 		cellButton checkEmpty = (cellButton) grid.getChildren().get(((row) * 10) + col);
-		if (!checkEmpty.emptyStatus){//button clicked already has a boat nothing to do
+		if (!checkEmpty.emptyStatus) {//button clicked already has a boat nothing to do
 			return;
 		}
 
-		cellButton checkBadCell = (cellButton) grid.getChildren().get((row*10)+col);
+		cellButton checkBadCell = (cellButton) grid.getChildren().get((row * 10) + col);
 		String backgroundImage = checkBadCell.getStyle();
 		if (backgroundImage != null && backgroundImage.contains("BadCell.png")) { //BadCell so do nothing
 			return;
@@ -582,7 +584,7 @@ public class BattleshipClient extends Application{
 				temp.emptyStatus = false;
 				ships[0] = new Ship(5, ((row - 2) * 10) + col, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, ((row + 2) * 10) + col, true);
 				game.piecePlaced();
-			}else if (game.currPieceIndex == 1) {
+			} else if (game.currPieceIndex == 1) {
 				cellButton temp = (cellButton) grid.getChildren().get(((row - 2) * 10) + col);
 				temp.emptyStatus = false;
 				temp = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
@@ -602,8 +604,7 @@ public class BattleshipClient extends Application{
 				temp.emptyStatus = false;
 				if (ships[2] == null) {
 					ships[2] = new Ship(3, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, true);
-				}
-				else {
+				} else {
 					ships[3] = new Ship(3, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, true);
 				}
 				game.piecePlaced();
@@ -615,8 +616,7 @@ public class BattleshipClient extends Application{
 				ships[4] = new Ship(2, ((row - 1) * 10) + col, (row * 10) + col, true);
 				game.piecePlaced();
 			}
-		}
-		else {
+		} else {
 			if (game.currPieceIndex == 0) {
 				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col - 2);
 				temp.emptyStatus = false;
@@ -669,6 +669,7 @@ public class BattleshipClient extends Application{
 		}
 
 	}
+
 	private Scene createGameScene() {
 
 		BorderPane mainLayout = new BorderPane();
@@ -713,8 +714,7 @@ public class BattleshipClient extends Application{
 			leftBoard.getChildren().get(mid).setStyle("-fx-background-image: url('VertMidRedStar-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 			leftBoard.getChildren().get(front2).setStyle("-fx-background-image: url('VertMidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('VertBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-		}
-		else {
+		} else {
 			int back = ships[0].getBack();
 			int back2 = ships[0].getBack2();
 			int mid = ships[0].getMid();
@@ -736,8 +736,7 @@ public class BattleshipClient extends Application{
 			leftBoard.getChildren().get(back2).setStyle("-fx-background-image: url('VertMidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 			leftBoard.getChildren().get(mid).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
 			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('VertBack-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-		}
-		else {
+		} else {
 			int back = ships[1].getBack();
 			int back2 = ships[1].getBack2();
 			int mid = ships[1].getMid();
@@ -769,8 +768,7 @@ public class BattleshipClient extends Application{
 			int front = ships[4].getFront();
 			leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('VertBackFlag-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
-		}
-		else {
+		} else {
 			int back = ships[4].getBack();
 			int front = ships[4].getFront();
 			leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('HorizontalBackFlag-CEll.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
@@ -778,7 +776,10 @@ public class BattleshipClient extends Application{
 		}
 		Button backButton = new Button("Forfeit");
 		backButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: black; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 15; -fx-border-color: #afb0b3; -fx-border-width: 4; -fx-border-radius: 5; -fx-font-family: 'Lucida Fax'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
-		backButton.setOnAction(e -> primaryStage.setScene(openScene()) );
+		backButton.setOnAction(e -> {
+			primaryStage.setScene(openScene());
+			resetGrid(rightBoard); // reset enemy cpu grid
+		});
 		mainLayout.setBottom(backButton);
 		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
 		boardsContainer.getChildren().addAll(leftBoard, rightBoard);
@@ -788,12 +789,16 @@ public class BattleshipClient extends Application{
 	}
 
 	private void initializeEnemyGrid(GridPane grid) {
+		placeEnemyShips(); // Ensure ships are placed before initializing UI
 
 		for (int row = 0; row < 10; row++) {
 			for (int col = 0; col < 10; col++) {
 				Button cell = new Button();
 				cell.setPrefSize(40, 40);
 				cell.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
+				if (enemyCpuGrid[row][col]) {
+					//cell.setStyle("-fx-background-color: darkgray;"); // Visual cue for debugging
+				}
 				int finalRow = row;
 				int finalCol = col;
 				cell.setOnAction(e -> handleEnemyCellAction(finalRow, finalCol, cell));
@@ -802,32 +807,67 @@ public class BattleshipClient extends Application{
 		}
 	}
 
-	private void handleEnemyCellAction(int row, int col, Button cell) {
-		// Here you might check against a game model to see if the cell contains a part of an enemy ship
-		// This could be a local check or a server request in a networked game
-		boolean hit = checkHit(row, col); // This method would check the game logic
-		System.out.println("enemy ship hit?  "+hit);
 
+	private void handleEnemyCellAction(int row, int col, Button cell) {
+		boolean hit = enemyCpuGrid[row][col]; // Directly check the grid
 		if (hit) {
 			cell.setStyle("-fx-background-color: red; -fx-border-color: white; -fx-border-width: 1px;");
-			// Additional game logic for a hit
+			System.out.println("Hit at " + row + ", " + col);
 		} else {
 			cell.setStyle("-fx-background-color: lightgray; -fx-border-color: white; -fx-border-width: 1px;");
-			// Additional game logic for a miss
+			System.out.println("Miss at " + row + ", " + col);
+		}
+		cell.setDisable(true); // Disable the button after it's been clicked
+	}
+
+	private boolean[][] enemyCpuGrid = new boolean[10][10]; // This grid keeps track of whether a cell has a ship part
+
+	private void placeEnemyShips() {
+		int[] shipSizes = {5, 4, 3, 3, 2}; // Sizes of ships
+		Random random = new Random();
+		for (int size : shipSizes) {
+			boolean placed = false;
+			while (!placed) {
+				int row = random.nextInt(10);
+				int col = random.nextInt(10);
+				boolean horizontal = random.nextBoolean();
+				if (canPlaceShip(size, row, col, horizontal)) {
+					for (int i = 0; i < size; i++) {
+						if (horizontal) {
+							enemyCpuGrid[row][col + i] = true;
+						} else {
+							enemyCpuGrid[row + i][col] = true;
+						}
+					}
+					placed = true;
+				}
+			}
+		}
+	}
+
+	private boolean canPlaceShip(int size, int row, int col, boolean horizontal) {
+		if (horizontal) {
+			if (col + size > 10) return false;
+			for (int i = 0; i < size; i++) {
+				if (enemyCpuGrid[row][col + i]) return false;
+			}
+		} else {
+			if (row + size > 10) return false;
+			for (int i = 0; i < size; i++) {
+				if (enemyCpuGrid[row + i][col]) return false;
+			}
+		}
+		return true;
+	}
+
+	private void resetGrid(GridPane grid) {
+		// Clear the state of the enemy grid's ship placements
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				enemyCpuGrid[i][j] = false;
+			}
 		}
 
-		// Disable the button after it's been clicked to prevent repeated clicks
-		cell.setDisable(true);
+
 	}
-
-	private boolean checkHit(int row, int col) {
-		// Logic to determine if the specified location is a hit
-		// This might involve checking a data structure that represents the enemy's board state
-		System.out.println("Enemy board clicked at " + row + ", " + col);
-		return true; // for now return true
-	}
-
-
-
-
 }
