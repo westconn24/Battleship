@@ -30,6 +30,7 @@ public class BattleshipClient extends Application{
 	private HBox buttonBox;
 	private Stage primaryStage;
     Client clientConnection;
+	public Ship[] ships = new Ship[5];
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -562,6 +563,7 @@ public class BattleshipClient extends Application{
 				temp.emptyStatus = false;
 				temp = (cellButton) grid.getChildren().get(((row + 2) * 10) + col);
 				temp.emptyStatus = false;
+				ships[0] = new Ship(5, ((row - 2) * 10) + col, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, ((row + 2) * 10) + col, true);
 				game.piecePlaced();
 			}else if (game.currPieceIndex == 1) {
 				cellButton temp = (cellButton) grid.getChildren().get(((row - 2) * 10) + col);
@@ -572,6 +574,7 @@ public class BattleshipClient extends Application{
 				temp.emptyStatus = false;
 				temp = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
 				temp.emptyStatus = false;
+				ships[1] = new Ship(4, ((row - 2) * 10) + col, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, true);
 				game.piecePlaced();
 			} else if (game.currPieceIndex == 2 || game.currPieceIndex == 3) {
 				cellButton temp = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
@@ -580,12 +583,19 @@ public class BattleshipClient extends Application{
 				temp.emptyStatus = false;
 				temp = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
 				temp.emptyStatus = false;
+				if (ships[2] == null) {
+					ships[2] = new Ship(3, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, true);
+				}
+				else {
+					ships[3] = new Ship(3, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, true);
+				}
 				game.piecePlaced();
 			} else if (game.currPieceIndex == 4) {
 				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col);
 				temp.emptyStatus = false;
-				temp = (cellButton) grid.getChildren().get(((row -1 ) * 10) + col);
+				temp = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
 				temp.emptyStatus = false;
+				ships[4] = new Ship(2, ((row - 1) * 10) + col, (row * 10) + col, true);
 				game.piecePlaced();
 			}
 		}
@@ -601,6 +611,7 @@ public class BattleshipClient extends Application{
 				temp.emptyStatus = false;
 				temp = (cellButton) grid.getChildren().get((row * 10) + col + 2);
 				temp.emptyStatus = false;
+				ships[0] = new Ship(5, (row * 10) + col - 2, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, (row * 10) + col + 2, false);
 				game.piecePlaced();
 			} else if (game.currPieceIndex == 1) {
 				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col - 2);
@@ -611,6 +622,7 @@ public class BattleshipClient extends Application{
 				temp.emptyStatus = false;
 				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
 				temp.emptyStatus = false;
+				ships[1] = new Ship(4, (row * 10) + col - 2, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, false);
 				game.piecePlaced();
 			} else if (game.currPieceIndex == 2 || game.currPieceIndex == 3) {
 				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col - 1);
@@ -619,15 +631,69 @@ public class BattleshipClient extends Application{
 				temp.emptyStatus = false;
 				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
 				temp.emptyStatus = false;
+				if (ships[2] == null ) {
+					ships[2] = new Ship(3, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, false);
+				}
+				else {
+					ships[3] = new Ship(3, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, false);
+				}
 				game.piecePlaced();
 			} else if (game.currPieceIndex == 4) {
 				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col);
 				temp.emptyStatus = false;
 				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
 				temp.emptyStatus = false;
+				ships[4] = new Ship(2, (row * 10) + col, (row * 10) + col + 1, false);
 				game.piecePlaced();
+
+			}
+			if (game.currPieceIndex == 5) {
+				primaryStage.setScene(createGameScene());
 			}
 		}
+	}
+	private Scene createGameScene() {
+		// Create the main layout pane
+		BorderPane mainLayout = new BorderPane();
+		setBackground(mainLayout, "battlebackground.png");
+
+		// Create the container for both boards
+		HBox boardsContainer = new HBox(80);
+		boardsContainer.setAlignment(Pos.CENTER);
+		boardsContainer.setPadding(new Insets(50, 0, 0, 0));
+
+		// Initialize the two boards
+		GridPane leftBoard = new GridPane();
+		leftBoard.setHgap(5); // Horizontal gap between buttons
+		leftBoard.setVgap(5); // Vertical gap between buttons
+		leftBoard.setAlignment(Pos.CENTER);
+
+		GridPane rightBoard = new GridPane();
+		rightBoard.setHgap(5); // Horizontal gap between buttons
+		rightBoard.setVgap(5); // Vertical gap between buttons
+		rightBoard.setAlignment(Pos.CENTER);
+
+		// Configure buttons and add them to each board
+		for (int row = 0; row < 10; row++) {
+			for (int col = 0; col < 10; col++) {
+				cellButton leftButton = new cellButton();
+				leftButton.setPrefSize(40, 40); // Set preferred size to maintain square shape
+				leftButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
+
+				cellButton rightButton = new cellButton();
+				rightButton.setPrefSize(40, 40); // Set preferred size to maintain square shape
+				rightButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
+
+				leftBoard.add(leftButton, col, row);
+				rightBoard.add(rightButton, col, row);
+			}
+		}
+
+		// Add both boards to the container
+		boardsContainer.getChildren().addAll(leftBoard, rightBoard);
+		mainLayout.setTop(boardsContainer); // Set at the top of the BorderPane
+
+		return new Scene(mainLayout, 1350, 650);
 	}
 
 
