@@ -690,6 +690,8 @@ public class BattleshipClient extends Application{
 		rightBoard.setVgap(5);
 		rightBoard.setAlignment(Pos.CENTER);
 
+		initializeEnemyGrid(rightBoard);
+
 
 		for (int row = 0; row < 10; row++) {
 			for (int col = 0; col < 10; col++) {
@@ -697,12 +699,7 @@ public class BattleshipClient extends Application{
 				leftButton.setPrefSize(40, 40);
 				leftButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
 
-				cellButton rightButton = new cellButton();
-				rightButton.setPrefSize(40, 40);
-				rightButton.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
-
 				leftBoard.add(leftButton, col, row);
-				rightBoard.add(rightButton, col, row);
 			}
 		}
 		if (ships[0].isVertical()) {
@@ -785,6 +782,48 @@ public class BattleshipClient extends Application{
 
 		return new Scene(mainLayout, 1350, 650);
 	}
+
+	private void initializeEnemyGrid(GridPane grid) {
+
+		for (int row = 0; row < 10; row++) {
+			for (int col = 0; col < 10; col++) {
+				Button cell = new Button();
+				cell.setPrefSize(40, 40);
+				cell.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
+				int finalRow = row;
+				int finalCol = col;
+				cell.setOnAction(e -> handleEnemyCellAction(finalRow, finalCol, cell));
+				grid.add(cell, col, row);
+			}
+		}
+	}
+
+	private void handleEnemyCellAction(int row, int col, Button cell) {
+		// Here you might check against a game model to see if the cell contains a part of an enemy ship
+		// This could be a local check or a server request in a networked game
+		boolean hit = checkHit(row, col); // This method would check the game logic
+		System.out.println("enemy ship hit?  "+hit);
+
+		if (hit) {
+			cell.setStyle("-fx-background-color: red; -fx-border-color: white; -fx-border-width: 1px;");
+			// Additional game logic for a hit
+		} else {
+			cell.setStyle("-fx-background-color: lightgray; -fx-border-color: white; -fx-border-width: 1px;");
+			// Additional game logic for a miss
+		}
+
+		// Disable the button after it's been clicked to prevent repeated clicks
+		cell.setDisable(true);
+	}
+
+	private boolean checkHit(int row, int col) {
+		// Logic to determine if the specified location is a hit
+		// This might involve checking a data structure that represents the enemy's board state
+		System.out.println("Enemy board clicked at " + row + ", " + col);
+		return true; // for now return true
+	}
+
+
 
 
 }
