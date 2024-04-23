@@ -47,6 +47,25 @@ public class Ship {
         return length;
     }
 
+    public int getBack() {
+        return back;
+    }
+
+    public int getBack2() {
+        return back2;
+    }
+
+    public int getMid() {
+        return mid;
+    }
+
+    public int getFront2() {
+        return front2;
+    }
+
+    public int getFront() {
+        return front;
+    }
 
     public boolean isVertical() {
         return isVertical;

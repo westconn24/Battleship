@@ -631,10 +631,9 @@ public class BattleshipClient extends Application{
 				temp.emptyStatus = false;
 				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
 				temp.emptyStatus = false;
-				if (ships[2] == null ) {
+				if (ships[2] == null) {
 					ships[2] = new Ship(3, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, false);
-				}
-				else {
+				} else {
 					ships[3] = new Ship(3, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, false);
 				}
 				game.piecePlaced();
@@ -647,10 +646,11 @@ public class BattleshipClient extends Application{
 				game.piecePlaced();
 
 			}
-			if (game.currPieceIndex == 5) {
-				primaryStage.setScene(createGameScene());
-			}
 		}
+		if (game.currPieceIndex == 5) {
+			primaryStage.setScene(createGameScene());
+		}
+
 	}
 	private Scene createGameScene() {
 
@@ -688,7 +688,80 @@ public class BattleshipClient extends Application{
 				rightBoard.add(rightButton, col, row);
 			}
 		}
+		if (ships[0].isVertical()) {
+			int back = ships[0].getBack();
+			int back2 = ships[0].getBack2();
+			int mid = ships[0].getMid();
+			int front2 = ships[0].getFront2();
+			int front = ships[0].getFront();
+			leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+			leftBoard.getChildren().get(back2).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(mid).setStyle("-fx-background-image: url('VertMidRedStar-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(front2).setStyle("-fx-background-image: url('VertMidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('VertBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+		}
+		else {
+			int back = ships[0].getBack();
+			int back2 = ships[0].getBack2();
+			int mid = ships[0].getMid();
+			int front2 = ships[0].getFront2();
+			int front = ships[0].getFront();
+			leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(back2).setStyle("-fx-background-image: url('MidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(mid).setStyle("-fx-background-image: url('MidRedStar-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(front2).setStyle("-fx-background-image: url('MidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 
+		}
+		if (ships[1].isVertical()) {
+			int back = ships[1].getBack();
+			int back2 = ships[1].getBack2();
+			int mid = ships[1].getMid();
+			int front = ships[1].getFront();
+			leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+			leftBoard.getChildren().get(back2).setStyle("-fx-background-image: url('VertMidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(mid).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('VertBack-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+		}
+		else {
+			int back = ships[1].getBack();
+			int back2 = ships[1].getBack2();
+			int mid = ships[1].getMid();
+			int front = ships[1].getFront();
+			leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(back2).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(mid).setStyle("-fx-background-image: url('MidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+		}
+		for (int i = 2; i < 4; i++) {
+			if (ships[i].isVertical()) {
+				int back = ships[i].getBack();
+				int mid = ships[i].getMid();
+				int front = ships[i].getFront();
+				leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+				leftBoard.getChildren().get(mid).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+				leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('VertBack-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+			} else {
+				int back = ships[i].getBack();
+				int mid = ships[i].getMid();
+				int front = ships[i].getFront();
+				leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+				leftBoard.getChildren().get(mid).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+				leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+			}
+		}
+		if (ships[4].isVertical()) {
+			int back = ships[4].getBack();
+			int front = ships[4].getFront();
+			leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('VertBackFlag-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+		}
+		else {
+			int back = ships[4].getBack();
+			int front = ships[4].getFront();
+			leftBoard.getChildren().get(back).setStyle("-fx-background-image: url('HorizontalBackFlag-CEll.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('HorizontalFront-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+		}
 
 		boardsContainer.getChildren().addAll(leftBoard, rightBoard);
 		mainLayout.setTop(boardsContainer);
