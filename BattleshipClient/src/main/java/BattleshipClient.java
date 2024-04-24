@@ -23,10 +23,15 @@ import javafx.stage.Stage;
 class ShipStatus {
 	int size;
 	int hits;
+	boolean isVertical = false;
 
-	ShipStatus(int size) {
+	int rowTop;
+	int colTop;
+
+	ShipStatus(int size, boolean vertical) {
 		this.size = size;
 		this.hits = 0;
+		this.isVertical = vertical;
 	}
 
 	boolean isDestroyed() {
@@ -559,8 +564,6 @@ public class BattleshipClient extends Application {
 	}
 
 	private void handleButtonHover(int row, int col, GridPane grid) {
-		System.out.print("Hover called, cell empty? ");
-		System.out.println(((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus);
 		game.setCurrHover(row, col);
 		if (((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus) {
 			setGridCellBackground(grid, row, col);
@@ -569,7 +572,6 @@ public class BattleshipClient extends Application {
 
 	private void handleButtonExit(int row, int col, GridPane grid) {
 		if (((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus) {
-			System.out.println("Emptying Cell");
 			removeGridCellBackground(row, col, grid);
 		}
 	}
@@ -709,8 +711,8 @@ public class BattleshipClient extends Application {
 		rightBoard.setAlignment(Pos.CENTER);
 
 		// initializes enemy grid and ships
-		initializeEnemyGrid(rightBoard);
 		initializeShipStatuses();
+		initializeEnemyGrid(rightBoard);
 
 
 		for (int row = 0; row < 10; row++) {
@@ -821,18 +823,22 @@ public class BattleshipClient extends Application {
 				}
 				int finalRow = row;
 				int finalCol = col;
-				enemyCell.setOnAction(e -> handleEnemyCellAction(finalRow, finalCol, enemyCell));
+				enemyCell.setOnAction(e -> handleEnemyCellAction(finalRow, finalCol, enemyCell, grid));
 				grid.add(enemyCell, col, row);
 			}
 		}
 	}
 
 
-	private void handleEnemyCellAction(int row, int col, Button cell) {
-		boolean hit = checkHit(row, col); // Directly check the grid
+	private void handleEnemyCellAction(int row, int col, Button cell, GridPane grid) {
+		boolean hit = checkHit(row, col, grid); // Directly check the grid
 		if (hit) {
-			cell.setStyle("-fx-background-color: red; -fx-border-color: white; -fx-border-width: 1px;");
-			System.out.println("Player hit at " + row + ", " + col);
+			if (!boatDestroyed){
+				cell.setStyle("-fx-background-color: red; -fx-border-color: white; -fx-border-width: 1px;");
+				System.out.println("Player hit at " + row + ", " + col);
+			} else {
+				boatDestroyed = false;
+			}
 		} else {
 			cell.setStyle("-fx-background-color: lightgray; -fx-border-color: white; -fx-border-width: 1px;");
 			System.out.println("Player miss at " + row + ", " + col);
@@ -842,9 +848,13 @@ public class BattleshipClient extends Application {
 
 	// This grid keeps track of whether a cell has part of a ship
 	private boolean[][] enemyCpuGrid = new boolean[10][10];
+
+	private boolean[][] enemyCpuGridBoatCenters = new boolean[10][10]; //keeps track of the center of boats
 	// Declare this array to track which ship occupies which cell
 	private int[][] shipAtPosition = new int[10][10]; // Default value of 0 means no ship
 
+	int numBoatsDestroyed = 0;
+	Boolean boatDestroyed = false;
 	private void placeEnemyShips() {
 		int[] shipSizes = {5, 4, 3, 3, 2}; // Sizes of ships
 		Random random = new Random();
@@ -856,11 +866,48 @@ public class BattleshipClient extends Application {
 				int col = random.nextInt(10);
 				boolean horizontal = random.nextBoolean();
 				if (canPlaceShip(size, row, col, horizontal)) {
-					for (int i = 0; i < size; i++) {
+					if (horizontal) { //needed to keep track of where the start of a boat is for showing the boat cell images later
+						if (size == 2) {
+							shipsStatus[4].isVertical = false;
+							shipsStatus[4].colTop = col;
+						} else if (size == 3 && shipIndex == 2) {
+							shipsStatus[2].isVertical = false;
+							shipsStatus[2].colTop = col;
+						} else if (size == 3 && shipIndex == 3) {
+							shipsStatus[3].isVertical = false;
+							shipsStatus[3].colTop = col;
+						} else if (size == 4) {
+							shipsStatus[1].isVertical = false;
+							shipsStatus[1].colTop = col;
+						} else if (size == 5) {
+							shipsStatus[0].isVertical = false;
+							shipsStatus[0].colTop = col;
+						}
+					} else {
+						if (size == 2) {
+							shipsStatus[4].isVertical = true;
+							shipsStatus[4].rowTop = row;
+						} else if (size == 3 && shipIndex == 2) {
+							System.out.println("Vertical 3-cell placed");
+							shipsStatus[2].isVertical = true;
+							shipsStatus[2].rowTop = row;
+						} else if (size == 3 && shipIndex == 3) {
+							System.out.println("Vertical 3-cell placed");
+							shipsStatus[3].isVertical = true;
+							shipsStatus[3].rowTop = row;
+						} else if (size == 4) {
+							shipsStatus[1].isVertical = true;
+							shipsStatus[1].rowTop = row;
+						} else if (size == 5) {
+							shipsStatus[0].isVertical = true;
+							shipsStatus[0].rowTop = row;
+						}
+					}
+					for (int i = 0; i < size; i++) { //loops until each cell of (size) boat has been placed
 						if (horizontal) {
 							enemyCpuGrid[row][col + i] = true;
 							shipAtPosition[row][col + i] = shipIndex + 1; // Store ship index (1-based for clarity)
-						} else {
+						} else { //placing vertical boat
 							enemyCpuGrid[row + i][col] = true;
 							shipAtPosition[row + i][col] = shipIndex + 1; // Store ship index (1-based for clarity)
 						}
@@ -886,9 +933,9 @@ public class BattleshipClient extends Application {
 		}
 		return true;
 	}
-	private boolean checkHit(int row, int col) {
+	private boolean checkHit(int row, int col, GridPane grid) {
 		if (enemyCpuGrid[row][col]) {
-			updateShipStatus(row, col);
+			updateShipStatus(row, col, grid);
 			return true;
 		}
 		return false;
@@ -909,22 +956,76 @@ public class BattleshipClient extends Application {
 	// following functions intializes ships (enemies for now)
 
 
-	private void initializeShipStatuses() {
+	private void initializeShipStatuses() { //Index 0 holds 5, 1 holds 4-cell, 2 holds first 3-cell, 3 holds second 3-cell, 4 holds 2-cell
 		int[] shipSizes = {5, 4, 3, 3, 2};
 		shipsStatus = new ShipStatus[shipSizes.length];
 		for (int i = 0; i < shipSizes.length; i++) {
-			shipsStatus[i] = new ShipStatus(shipSizes[i]);
+			shipsStatus[i] = new ShipStatus(shipSizes[i], false);
 		}
 
 	}
-	private void updateShipStatus(int row, int col) {
+	private void updateShipStatus(int row, int col, GridPane grid) {
 		int shipIndex = shipAtPosition[row][col] - 1; // Adjust for 0-based index in the array
 		if (shipIndex >= 0) { // Check if there's a ship at this position
 			shipsStatus[shipIndex].hits++;
 
 			// prints whenever a ship is destroyed along with its number (index + 1)
 			if (shipsStatus[shipIndex].isDestroyed()) {
+				numBoatsDestroyed++;
+				boatDestroyed = true;
 				System.out.println("Ship " + (shipIndex + 1) + " is fully destroyed!");
+
+				if (shipsStatus[shipIndex].isVertical){ //Vertical image placement needed
+					row = shipsStatus[shipIndex].rowTop;
+					if (shipIndex == 0){
+						grid.getChildren().get(((row + 0) * 10) + col).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+						grid.getChildren().get(((row + 1) * 10) + col).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row + 2) * 10) + col).setStyle("-fx-background-image: url('VertMidRedStar-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row + 3) * 10) + col).setStyle("-fx-background-image: url('VertMidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row + 4) * 10) + col).setStyle("-fx-background-image: url('VertBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+
+					} else if (shipIndex == 1){
+						grid.getChildren().get(((row + 0) * 10) + col).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+						grid.getChildren().get(((row + 1) * 10) + col).setStyle("-fx-background-image: url('VertMidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row + 2) * 10) + col).setStyle("-fx-background-image: url('VertMidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row + 3) * 10) + col).setStyle("-fx-background-image: url('VertBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+
+					} else if (shipIndex == 2 || shipIndex == 3){
+						System.out.println("3-cell reimage");
+						grid.getChildren().get(((row  + 0 ) * 10) + col).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+						grid.getChildren().get(((row + 1) * 10) + col).setStyle("-fx-background-image: url('VertMidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row + 2) * 10) + col).setStyle("-fx-background-image: url('VertBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					} else if (shipIndex == 4){
+						grid.getChildren().get(((row + 0) * 10) + col).setStyle("-fx-background-image: url('VertFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+						grid.getChildren().get(((row + 1) * 10) + col).setStyle("-fx-background-image: url('VertBackFlag-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+
+					}
+				} else { //horizontal image placement needed
+					col = shipsStatus[shipIndex].colTop;
+					if (shipIndex == 0){
+						grid.getChildren().get(((row) * 10) + col +4).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+						grid.getChildren().get(((row) * 10) + col + 3).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row) * 10) + col + 2).setStyle("-fx-background-image: url('MidRedStar-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row) * 10) + col + 1).setStyle("-fx-background-image: url('MidCannon-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row) * 10) + col).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+
+					} else if (shipIndex == 1){
+						grid.getChildren().get(((row) * 10) + col + 3).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+						grid.getChildren().get(((row) * 10) + col + 2).setStyle("-fx-background-image: url('MidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row) * 10) + col + 1).setStyle("-fx-background-image: url('MidGrey-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row) * 10) + col).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+
+					} else if (shipIndex == 2 || shipIndex == 3){
+						System.out.println("3-cell reimage");
+						grid.getChildren().get(((row) * 10) + col + 2).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+						grid.getChildren().get(((row) * 10) + col + 1).setStyle("-fx-background-image: url('MidRed-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center;");
+						grid.getChildren().get(((row) * 10) + col).setStyle("-fx-background-image: url('HorizontalBack-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+					} else if (shipIndex == 4){
+						grid.getChildren().get(((row) * 10) + col + 1).setStyle("-fx-background-image: url('HorizontalFront-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+						grid.getChildren().get(((row) * 10) + col).setStyle("-fx-background-image: url('HorizontalBackFlag-cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
+
+					}
+				}
 			}
 		}
 	}
