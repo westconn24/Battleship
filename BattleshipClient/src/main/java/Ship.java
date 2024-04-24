@@ -38,7 +38,6 @@ public class Ship {
         this.front = front;
         this.isVertical = isVertical;
     }
-
     public String getType() {
         return type;
     }

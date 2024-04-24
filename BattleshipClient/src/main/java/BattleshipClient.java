@@ -1,7 +1,9 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -12,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.image.Image;
 import javafx.scene.shape.StrokeLineCap;
@@ -19,6 +22,7 @@ import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 class ShipStatus {
 	int size;
@@ -53,7 +57,19 @@ public class BattleshipClient extends Application {
 	private Stage primaryStage;
 	Client clientConnection;
 	public Ship[] ships = new Ship[5];
+
+	private ShipStatus[] playerShips;
 	private ShipStatus[] shipsStatus;
+
+	private boolean[][] playerGrid = new boolean[10][10];
+	private boolean[] availableCells = new boolean[100];
+
+
+	{
+		for (int i = 0; i < 100; i++) {
+			availableCells[i] = true;
+		}
+	}
 
 	public static void main(String[] args) {
 		launch(args);
@@ -685,14 +701,66 @@ public class BattleshipClient extends Application {
 		}
 		if (game.currPieceIndex == 5) {
 			primaryStage.setScene(createGameScene());
+				int row00 = ships[0].getBack() / 10;
+				int col00 = ships[0].getBack() % 10;
+				int row01 = ships[0].getBack2() / 10;
+				int col01 = ships[0].getBack2() % 10;
+				int row02 = ships[0].getMid() / 10;
+				int col02 = ships[0].getMid() % 10;
+				int row03 = ships[0].getFront2() / 10;
+				int col03 = ships[0].getFront2() % 10;
+				int row04 = ships[0].getFront() / 10;
+				int col04 = ships[0].getFront() % 10;
+				int row10 = ships[1].getBack() / 10;
+				int col10 = ships[1].getBack() % 10;
+				int row11 = ships[1].getBack2() / 10;
+				int col11 = ships[1].getBack2() % 10;
+				int row12 = ships[1].getMid() / 10;
+				int col12 = ships[1].getMid() % 10;
+				int row13 = ships[1].getFront() / 10;
+				int col13 = ships[1].getFront() % 10;
+				int row20 = ships[2].getBack() / 10;
+				int col20 = ships[2].getBack() % 10;
+				int row21 = ships[2].getMid() / 10;
+				int col21 = ships[2].getMid() % 10;
+				int row22 = ships[2].getFront() / 10;
+				int col22 = ships[2].getFront() % 10;
+				int row30 = ships[3].getBack() / 10;
+				int col30 = ships[3].getBack() % 10;
+				int row31 = ships[3].getMid() / 10;
+				int col31 = ships[3].getMid() % 10;
+				int row32 = ships[3].getFront() / 10;
+				int col32 = ships[3].getFront() % 10;
+				int row40 = ships[4].getBack() / 10;
+				int col40 = ships[4].getBack() % 10;
+				int row41 = ships[4].getFront() / 10;
+				int col41 = ships[4].getFront() % 10;
+
+				playerGrid[row00][col00] = true;
+				playerGrid[row01][col01] = true;
+				playerGrid[row02][col02] = true;
+				playerGrid[row03][col03] = true;
+				playerGrid[row04][col04] = true;
+				playerGrid[row10][col10] = true;
+				playerGrid[row11][col11] = true;
+				playerGrid[row12][col12] = true;
+				playerGrid[row13][col13] = true;
+				playerGrid[row20][col20] = true;
+				playerGrid[row21][col21] = true;
+				playerGrid[row22][col22] = true;
+				playerGrid[row30][col30] = true;
+				playerGrid[row31][col31] = true;
+				playerGrid[row32][col32] = true;
+				playerGrid[row40][col40] = true;
+				playerGrid[row41][col41] = true;
 		}
+
 
 	}
 
 	private Scene createGameScene() {
-
-		BorderPane mainLayout = new BorderPane();
-		setBackground(mainLayout, "battlebackground.png");
+		BorderPane gamePane = new BorderPane();
+		setBackground(gamePane, "battlebackground.png");
 
 
 		HBox boardsContainer = new HBox(80);
@@ -712,7 +780,7 @@ public class BattleshipClient extends Application {
 
 		// initializes enemy grid and ships
 		initializeShipStatuses();
-		initializeEnemyGrid(rightBoard);
+		initializeEnemyGrid(rightBoard, leftBoard);
 
 
 		for (int row = 0; row < 10; row++) {
@@ -798,19 +866,25 @@ public class BattleshipClient extends Application {
 		Button backButton = new Button("Forfeit");
 		backButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: black; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 15; -fx-border-color: #afb0b3; -fx-border-width: 4; -fx-border-radius: 5; -fx-font-family: 'Lucida Fax'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
 		backButton.setOnAction(e -> {
+			resetShips();
 			primaryStage.setScene(openScene());
+
 			resetGrid(rightBoard); // reset enemy cpu grid
 
 		});
-		mainLayout.setBottom(backButton);
+		gamePane.setBottom(backButton);
 		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
 		boardsContainer.getChildren().addAll(leftBoard, rightBoard);
-		mainLayout.setTop(boardsContainer);
+		gamePane.setTop(boardsContainer);
 
-		return new Scene(mainLayout, 1350, 650);
+		return new Scene(gamePane, 1350, 650);
+	}
+	public void resetShips() {
+        Arrays.fill(ships, null);
 	}
 
-	private void initializeEnemyGrid(GridPane grid) {
+
+	private void initializeEnemyGrid(GridPane grid, GridPane playergrid) {
 		placeEnemyShips(); // Ensure ships are placed before initializing UI
 
 		for (int row = 0; row < 10; row++) {
@@ -823,14 +897,14 @@ public class BattleshipClient extends Application {
 				}
 				int finalRow = row;
 				int finalCol = col;
-				enemyCell.setOnAction(e -> handleEnemyCellAction(finalRow, finalCol, enemyCell, grid));
+				enemyCell.setOnAction(e -> handleEnemyCellAction(finalRow, finalCol, enemyCell, grid, playergrid));
 				grid.add(enemyCell, col, row);
 			}
 		}
 	}
 
 
-	private void handleEnemyCellAction(int row, int col, Button cell, GridPane grid) {
+	private void handleEnemyCellAction(int row, int col, Button cell, GridPane grid, GridPane playergrid) {
 		boolean hit = checkHit(row, col, grid); // Directly check the grid
 		if (hit) {
 			if (!boatDestroyed){
@@ -844,10 +918,52 @@ public class BattleshipClient extends Application {
 			System.out.println("Player miss at " + row + ", " + col);
 		}
 		cell.setDisable(true); // Disable the button after it's been clicked
+		Random random = new Random();
+
+		int index = random.nextInt(100);
+		boolean valid = availableCells[index];
+		while (!valid) {
+			index = random.nextInt(100);
+			valid = availableCells[index];
+		}
+		int prow = index / 10;
+		int pcol = index % 10;
+		handleCpuChoice(index, prow, pcol, playergrid);
+		availableCells[index] = false;
+
+
+//		if (areAllShipsDestroyed()) {
+//			showGameOverImage(true);  // Player wins
+//		} else if (numBoatsDestroyed == 4) {
+//			showGameOverImage(false);  // CPU wins
+//		}
+
+	}
+
+
+
+	private void handleCpuChoice (int index, int row, int col, GridPane grid) {
+
+		cellButton currButton = (cellButton) grid.getChildren().get(index);
+		boolean hit = checkCPUHit(row, col, grid);
+
+		if (hit) {
+			if (!boatDestroyed){
+				currButton.setStyle("-fx-background-color: red; -fx-border-color: white; -fx-border-width: 1px;");
+				System.out.println("CPU hit at " + row + ", " + col);
+			} else {
+				boatDestroyed = false;
+			}
+		} else {
+			currButton.setStyle("-fx-background-color: lightgray; -fx-border-color: white; -fx-border-width: 1px;");
+			System.out.println("CPU miss at " + row + ", " + col);
+		}
+
 	}
 
 	// This grid keeps track of whether a cell has part of a ship
 	private boolean[][] enemyCpuGrid = new boolean[10][10];
+
 
 	private boolean[][] enemyCpuGridBoatCenters = new boolean[10][10]; //keeps track of the center of boats
 	// Declare this array to track which ship occupies which cell
@@ -857,6 +973,11 @@ public class BattleshipClient extends Application {
 	Boolean boatDestroyed = false;
 	private void placeEnemyShips() {
 		int[] shipSizes = {5, 4, 3, 3, 2}; // Sizes of ships
+		for (int row = 0; row < 10; row++) {
+			for (int col = 0; col < 10; col++) {
+				enemyCpuGrid[row][col] = false;
+			}
+		}
 		Random random = new Random();
 		for (int shipIndex = 0; shipIndex < shipSizes.length; shipIndex++) {
 			int size = shipSizes[shipIndex];
@@ -935,6 +1056,13 @@ public class BattleshipClient extends Application {
 	}
 	private boolean checkHit(int row, int col, GridPane grid) {
 		if (enemyCpuGrid[row][col]) {
+			updateShipStatus(row, col, grid);
+			return true;
+		}
+		return false;
+	}
+	private boolean checkCPUHit(int row, int col, GridPane grid) {
+		if (playerGrid[row][col]) {
 			updateShipStatus(row, col, grid);
 			return true;
 		}
@@ -1027,6 +1155,7 @@ public class BattleshipClient extends Application {
 					}
 				}
 			}
+
 		}
 	}
 
@@ -1034,5 +1163,48 @@ public class BattleshipClient extends Application {
 		// Check if the cell belongs to the specified shipIndex
 		return shipAtPosition[row][col] == shipIndex + 1;
 	}
+	private boolean areAllShipsDestroyed(ShipStatus[] shipStatuses) {
+		for (ShipStatus status : shipStatuses) {
+			if (!status.isDestroyed()) {
+				return false;
+			}
+		}
+		return true;
+	}
+	private void showGameOverImage(boolean playerWon) {
+		String imagePath = playerWon ? "win.png" : "lose.png";
+		Image gameOverImage = new Image(imagePath);
+		ImageView imageView = new ImageView(gameOverImage);
+		imageView.setPreserveRatio(true);
+		imageView.setFitHeight(300);
+		imageView.setFitWidth(500);
+
+
+		StackPane gameOverPane = new StackPane(imageView);
+		gameOverPane.setAlignment(Pos.CENTER);
+		gameOverPane.setStyle("-fx-background-color: transparent;");
+
+
+		BorderPane root = new BorderPane();
+		setBackground(root, "battlebackground.png");
+		root.setCenter(gameOverPane);
+
+
+		Scene gameOverScene = new Scene(root, 1350, 650);
+
+
+		Platform.runLater(() -> primaryStage.setScene(gameOverScene));
+
+
+		PauseTransition delay = new PauseTransition(Duration.seconds(3));
+		delay.setOnFinished(e -> {
+			Platform.runLater(() -> {
+				resetShips();
+				primaryStage.setScene(openScene());
+			});
+		});
+		delay.play();
+	}
+
 
 }
