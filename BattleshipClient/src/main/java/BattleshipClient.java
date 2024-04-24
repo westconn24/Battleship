@@ -867,6 +867,7 @@ public class BattleshipClient extends Application {
 		backButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: black; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 15; -fx-border-color: #afb0b3; -fx-border-width: 4; -fx-border-radius: 5; -fx-font-family: 'Lucida Fax'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
 		backButton.setOnAction(e -> {
 			resetShips();
+			numPlayerCellsDestroyed = 0;
 			primaryStage.setScene(openScene());
 
 			resetGrid(rightBoard); // reset enemy cpu grid
@@ -906,6 +907,7 @@ public class BattleshipClient extends Application {
 
 	private void handleEnemyCellAction(int row, int col, Button cell, GridPane grid, GridPane playergrid) {
 		boolean hit = checkHit(row, col, grid); // Directly check the grid
+
 		if (hit) {
 			if (!boatDestroyed){
 				cell.setStyle("-fx-background-color: red; -fx-border-color: white; -fx-border-width: 1px;");
@@ -928,15 +930,16 @@ public class BattleshipClient extends Application {
 		}
 		int prow = index / 10;
 		int pcol = index % 10;
+
 		handleCpuChoice(index, prow, pcol, playergrid);
 		availableCells[index] = false;
 
 
-//		if (areAllShipsDestroyed()) {
-//			showGameOverImage(true);  // Player wins
-//		} else if (numBoatsDestroyed == 4) {
-//			showGameOverImage(false);  // CPU wins
-//		}
+		if (areAllShipsDestroyed(shipsStatus)) {
+			showGameOverImage(true);  // Player win
+		} else if (numPlayerCellsDestroyed == 17) {
+			showGameOverImage(false);  // Player loss
+		}
 
 	}
 
@@ -963,13 +966,9 @@ public class BattleshipClient extends Application {
 
 	// This grid keeps track of whether a cell has part of a ship
 	private boolean[][] enemyCpuGrid = new boolean[10][10];
-
-
-	private boolean[][] enemyCpuGridBoatCenters = new boolean[10][10]; //keeps track of the center of boats
-	// Declare this array to track which ship occupies which cell
 	private int[][] shipAtPosition = new int[10][10]; // Default value of 0 means no ship
 
-	int numBoatsDestroyed = 0;
+	int numPlayerCellsDestroyed = 0;
 	Boolean boatDestroyed = false;
 	private void placeEnemyShips() {
 		int[] shipSizes = {5, 4, 3, 3, 2}; // Sizes of ships
@@ -1063,7 +1062,7 @@ public class BattleshipClient extends Application {
 	}
 	private boolean checkCPUHit(int row, int col, GridPane grid) {
 		if (playerGrid[row][col]) {
-			updateShipStatus(row, col, grid);
+			numPlayerCellsDestroyed++;
 			return true;
 		}
 		return false;
@@ -1080,9 +1079,7 @@ public class BattleshipClient extends Application {
 		}
 	}
 
-
 	// following functions intializes ships (enemies for now)
-
 
 	private void initializeShipStatuses() { //Index 0 holds 5, 1 holds 4-cell, 2 holds first 3-cell, 3 holds second 3-cell, 4 holds 2-cell
 		int[] shipSizes = {5, 4, 3, 3, 2};
@@ -1099,7 +1096,6 @@ public class BattleshipClient extends Application {
 
 			// prints whenever a ship is destroyed along with its number (index + 1)
 			if (shipsStatus[shipIndex].isDestroyed()) {
-				numBoatsDestroyed++;
 				boatDestroyed = true;
 				System.out.println("Ship " + (shipIndex + 1) + " is fully destroyed!");
 
@@ -1172,6 +1168,7 @@ public class BattleshipClient extends Application {
 		return true;
 	}
 	private void showGameOverImage(boolean playerWon) {
+		numPlayerCellsDestroyed = 0;
 		String imagePath = playerWon ? "win.png" : "lose.png";
 		Image gameOverImage = new Image(imagePath);
 		ImageView imageView = new ImageView(gameOverImage);
@@ -1200,6 +1197,7 @@ public class BattleshipClient extends Application {
 		delay.setOnFinished(e -> {
 			Platform.runLater(() -> {
 				resetShips();
+				numPlayerCellsDestroyed = 0;
 				primaryStage.setScene(openScene());
 			});
 		});
