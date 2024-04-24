@@ -20,6 +20,22 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+class ShipStatus {
+	int size;
+	int hits;
+
+	ShipStatus(int size) {
+		this.size = size;
+		this.hits = 0;
+	}
+
+	boolean isDestroyed() {
+		return hits >= size;
+	}
+}
+
+
+
 public class BattleshipClient extends Application {
 	boardSetup game;
 	private TextField textField;
@@ -32,6 +48,7 @@ public class BattleshipClient extends Application {
 	private Stage primaryStage;
 	Client clientConnection;
 	public Ship[] ships = new Ship[5];
+	private ShipStatus[] shipsStatus;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -542,7 +559,7 @@ public class BattleshipClient extends Application {
 	}
 
 	private void handleButtonHover(int row, int col, GridPane grid) {
-		System.out.println("Hover called, cell empty?:");
+		System.out.print("Hover called, cell empty? ");
 		System.out.println(((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus);
 		game.setCurrHover(row, col);
 		if (((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus) {
@@ -691,7 +708,9 @@ public class BattleshipClient extends Application {
 		rightBoard.setVgap(5);
 		rightBoard.setAlignment(Pos.CENTER);
 
+		// initializes enemy grid and ships
 		initializeEnemyGrid(rightBoard);
+		initializeShipStatuses();
 
 
 		for (int row = 0; row < 10; row++) {
@@ -779,6 +798,7 @@ public class BattleshipClient extends Application {
 		backButton.setOnAction(e -> {
 			primaryStage.setScene(openScene());
 			resetGrid(rightBoard); // reset enemy cpu grid
+
 		});
 		mainLayout.setBottom(backButton);
 		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
@@ -793,39 +813,43 @@ public class BattleshipClient extends Application {
 
 		for (int row = 0; row < 10; row++) {
 			for (int col = 0; col < 10; col++) {
-				Button cell = new Button();
-				cell.setPrefSize(40, 40);
-				cell.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
+				Button enemyCell = new Button();
+				enemyCell.setPrefSize(40, 40);
+				enemyCell.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
 				if (enemyCpuGrid[row][col]) {
-					//cell.setStyle("-fx-background-color: darkgray;"); // Visual cue for debugging
+					enemyCell.setStyle("-fx-background-color: darkgray;"); // Visual cue for debugging
 				}
 				int finalRow = row;
 				int finalCol = col;
-				cell.setOnAction(e -> handleEnemyCellAction(finalRow, finalCol, cell));
-				grid.add(cell, col, row);
+				enemyCell.setOnAction(e -> handleEnemyCellAction(finalRow, finalCol, enemyCell));
+				grid.add(enemyCell, col, row);
 			}
 		}
 	}
 
 
 	private void handleEnemyCellAction(int row, int col, Button cell) {
-		boolean hit = enemyCpuGrid[row][col]; // Directly check the grid
+		boolean hit = checkHit(row, col); // Directly check the grid
 		if (hit) {
 			cell.setStyle("-fx-background-color: red; -fx-border-color: white; -fx-border-width: 1px;");
-			System.out.println("Hit at " + row + ", " + col);
+			System.out.println("Player hit at " + row + ", " + col);
 		} else {
 			cell.setStyle("-fx-background-color: lightgray; -fx-border-color: white; -fx-border-width: 1px;");
-			System.out.println("Miss at " + row + ", " + col);
+			System.out.println("Player miss at " + row + ", " + col);
 		}
 		cell.setDisable(true); // Disable the button after it's been clicked
 	}
 
-	private boolean[][] enemyCpuGrid = new boolean[10][10]; // This grid keeps track of whether a cell has a ship part
+	// This grid keeps track of whether a cell has part of a ship
+	private boolean[][] enemyCpuGrid = new boolean[10][10];
+	// Declare this array to track which ship occupies which cell
+	private int[][] shipAtPosition = new int[10][10]; // Default value of 0 means no ship
 
 	private void placeEnemyShips() {
 		int[] shipSizes = {5, 4, 3, 3, 2}; // Sizes of ships
 		Random random = new Random();
-		for (int size : shipSizes) {
+		for (int shipIndex = 0; shipIndex < shipSizes.length; shipIndex++) {
+			int size = shipSizes[shipIndex];
 			boolean placed = false;
 			while (!placed) {
 				int row = random.nextInt(10);
@@ -835,8 +859,10 @@ public class BattleshipClient extends Application {
 					for (int i = 0; i < size; i++) {
 						if (horizontal) {
 							enemyCpuGrid[row][col + i] = true;
+							shipAtPosition[row][col + i] = shipIndex + 1; // Store ship index (1-based for clarity)
 						} else {
 							enemyCpuGrid[row + i][col] = true;
+							shipAtPosition[row + i][col] = shipIndex + 1; // Store ship index (1-based for clarity)
 						}
 					}
 					placed = true;
@@ -844,6 +870,7 @@ public class BattleshipClient extends Application {
 			}
 		}
 	}
+
 
 	private boolean canPlaceShip(int size, int row, int col, boolean horizontal) {
 		if (horizontal) {
@@ -859,15 +886,52 @@ public class BattleshipClient extends Application {
 		}
 		return true;
 	}
+	private boolean checkHit(int row, int col) {
+		if (enemyCpuGrid[row][col]) {
+			updateShipStatus(row, col);
+			return true;
+		}
+		return false;
+	}
 
 	private void resetGrid(GridPane grid) {
 		// Clear the state of the enemy grid's ship placements
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				enemyCpuGrid[i][j] = false;
+				shipAtPosition[i][j] = 0; // Reset ship tracking
+
 			}
 		}
+	}
 
+
+	// following functions intializes ships (enemies for now)
+
+
+	private void initializeShipStatuses() {
+		int[] shipSizes = {5, 4, 3, 3, 2};
+		shipsStatus = new ShipStatus[shipSizes.length];
+		for (int i = 0; i < shipSizes.length; i++) {
+			shipsStatus[i] = new ShipStatus(shipSizes[i]);
+		}
 
 	}
+	private void updateShipStatus(int row, int col) {
+		int shipIndex = shipAtPosition[row][col] - 1; // Adjust for 0-based index in the array
+		if (shipIndex >= 0) { // Check if there's a ship at this position
+			shipsStatus[shipIndex].hits++;
+
+			// prints whenever a ship is destroyed along with its number (index + 1)
+			if (shipsStatus[shipIndex].isDestroyed()) {
+				System.out.println("Ship " + (shipIndex + 1) + " is fully destroyed!");
+			}
+		}
+	}
+
+	private boolean isPartOfShip(int shipIndex, int row, int col) {
+		// Check if the cell belongs to the specified shipIndex
+		return shipAtPosition[row][col] == shipIndex + 1;
+	}
+
 }
