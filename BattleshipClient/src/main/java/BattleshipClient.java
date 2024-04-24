@@ -58,7 +58,6 @@ public class BattleshipClient extends Application {
 	Client clientConnection;
 	public Ship[] ships = new Ship[5];
 
-	private ShipStatus[] playerShips;
 	private ShipStatus[] shipsStatus;
 
 	private boolean[][] playerGrid = new boolean[10][10];
@@ -782,7 +781,6 @@ public class BattleshipClient extends Application {
 		initializeShipStatuses();
 		initializeEnemyGrid(rightBoard, leftBoard);
 
-
 		for (int row = 0; row < 10; row++) {
 			for (int col = 0; col < 10; col++) {
 				cellButton leftButton = new cellButton();
@@ -871,7 +869,6 @@ public class BattleshipClient extends Application {
 			primaryStage.setScene(openScene());
 
 			resetGrid(rightBoard); // reset enemy cpu grid
-
 		});
 		gamePane.setBottom(backButton);
 		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
@@ -936,9 +933,15 @@ public class BattleshipClient extends Application {
 
 
 		if (areAllShipsDestroyed(shipsStatus)) {
+			resetGrid(grid); // reset enemy cpu grid
+			resetShips();
+			numPlayerCellsDestroyed = 0;
 			showGameOverImage(true);  // Player win
 		} else if (numPlayerCellsDestroyed == 17) {
-			showGameOverImage(false);  // Player loss
+			resetGrid(grid); // reset enemy cpu grid
+			resetShips();
+			numPlayerCellsDestroyed = 0;
+			showGameOverImage(false);  // Player win
 		}
 
 	}
@@ -1074,8 +1077,11 @@ public class BattleshipClient extends Application {
 			for (int j = 0; j < 10; j++) {
 				enemyCpuGrid[i][j] = false;
 				shipAtPosition[i][j] = 0; // Reset ship tracking
-
 			}
+		}
+
+		for (int i = 0; i < 100; i++) {
+			availableCells[i] = true;
 		}
 	}
 
@@ -1093,6 +1099,7 @@ public class BattleshipClient extends Application {
 		int shipIndex = shipAtPosition[row][col] - 1; // Adjust for 0-based index in the array
 		if (shipIndex >= 0) { // Check if there's a ship at this position
 			shipsStatus[shipIndex].hits++;
+			System.out.println("Player hit cpu ship");
 
 			// prints whenever a ship is destroyed along with its number (index + 1)
 			if (shipsStatus[shipIndex].isDestroyed()) {
@@ -1196,8 +1203,6 @@ public class BattleshipClient extends Application {
 		PauseTransition delay = new PauseTransition(Duration.seconds(3));
 		delay.setOnFinished(e -> {
 			Platform.runLater(() -> {
-				resetShips();
-				numPlayerCellsDestroyed = 0;
 				primaryStage.setScene(openScene());
 			});
 		});
