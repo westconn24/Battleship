@@ -1173,13 +1173,13 @@ public class BattleshipClient extends Application {
 
 		if (hit) {
 			if (!boatDestroyed){
-				cell.setStyle("-fx-background-color: red; -fx-border-color: white; -fx-border-width: 1px;");
+				cell.setStyle("-fx-background-image: url('deadcell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: white;  -fx-border-color: blue; -fx-border-width: 2px;");
 				System.out.println("Player hit at " + row + ", " + col);
 			} else {
 				boatDestroyed = false;
 			}
 		} else {
-			cell.setStyle("-fx-background-color: lightgray; -fx-border-color: white; -fx-border-width: 1px;");
+			cell.setStyle("-fx-background-image: url('misscell.png'); -fx-background-position: center; -fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 1px;");
 			System.out.println("Player miss at " + row + ", " + col);
 		}
 		cell.setDisable(true); // Disable the button after it's been clicked
