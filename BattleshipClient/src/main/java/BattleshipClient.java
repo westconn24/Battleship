@@ -3,6 +3,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javafx.animation.PauseTransition;
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -124,65 +125,63 @@ public class BattleshipClient extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		this.primaryStage = primaryStage; // Store primaryStage in the instance variable
+		this.primaryStage = primaryStage;
 		primaryStage.setScene(openScene());
 		primaryStage.setTitle("Battleship Client");
 		primaryStage.show();
 	}
 
 	private Scene openScene() {
-		VBox layout = new VBox(10);
-		layout.setAlignment(Pos.CENTER);
-
-
-		mainPane = new BorderPane();
+		BorderPane mainPane = new BorderPane();
 		setBackground(mainPane, "battlebackground.png");
-
 
 		Image battle = new Image("Banner.png");
 		ImageView imageView = new ImageView(battle);
 		imageView.setPreserveRatio(true);
-		imageView.setFitHeight(500); // Set the height of the image (you can adjust this as needed)
-		imageView.setFitWidth(600); // Set the width of the image (you can adjust this as needed)
+		imageView.setFitHeight(500);
+		imageView.setFitWidth(600);
 
 		StackPane imageContainer = new StackPane(imageView);
-		StackPane.setAlignment(imageView, Pos.TOP_CENTER); // Aligns the ImageView to the top of the StackPane
+		StackPane.setAlignment(imageView, Pos.TOP_CENTER);
+		imageContainer.setPadding(new Insets(100, 0, 0, 0));
 
-		// Adjusting padding to position the image higher
-		imageContainer.setPadding(new Insets(100, 0, 0, 0)); // Negative top padding to move it upwards
+		VBox centerLayout = new VBox();
+		centerLayout.getChildren().addAll(imageContainer);
 
-		// Set the StackPane as the center of the BorderPane
-		mainPane.setCenter(imageContainer);
+		TranslateTransition t = new TranslateTransition(Duration.seconds(2), centerLayout);
+
+		t.setToY(-600);
 
 		Button playButton = new Button("PLAY");
-		playButton.setOnAction(e -> primaryStage.setScene(playerChoiceScene(primaryStage)));
-		Font.loadFont(Objects.requireNonNull(BattleshipClient.class.getResource("Super_Foods.ttf")).toExternalForm(), 30);
 		playButton.setStyle(
-				"-fx-font-size: 45px; " +  // Larger font size
-						"-fx-font-weight: bold; " +  // Bold font
-						"-fx-background-color: #333232; " +  // Background color
-						"-fx-text-fill: #f1f1f1; " +  // Text color
-						"-fx-padding: 10 20 10 20; " +  // Padding around text
-						"-fx-background-radius: 15; " +  // Rounded corners
-						"-fx-border-color: #000000; " +  // Border color
-						"-fx-border-width: 4; " +  // Border width
-						"-fx-border-radius: 5; " +  // Ensure this matches the background radius
+				"-fx-font-size: 45px; " +
+						"-fx-font-weight: bold; " +
+						"-fx-background-color: #333232; " +
+						"-fx-text-fill: #f1f1f1; " +
+						"-fx-padding: 10 20 10 20; " +
+						"-fx-background-radius: 15; " +
+						"-fx-border-color: #000000; " +
+						"-fx-border-width: 4; " +
+						"-fx-border-radius: 5; " +
 						"-fx-font-family: 'Super Foods'; " +
-						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
+						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"
 		);
+		playButton.setOnAction(e -> {
 
-		playButton.setMinSize(150, 75);
+			t.play();
+		});
+		t.setOnFinished(e -> primaryStage.setScene(playerChoiceScene(primaryStage)));
+
+
 		HBox buttonContainer = new HBox(playButton);
-		buttonContainer.setAlignment(Pos.CENTER); // Aligns the button to the center of the HBox
-
-		// Add a padding to position the button slightly off the bottom edge if needed
-		buttonContainer.setPadding(new Insets(-200, 0, 20, 0)); // Adds padding to the bottom
-
-		// Set the HBox with the button as the bottom of the BorderPane
-		mainPane.setBottom(buttonContainer);
+		buttonContainer.setAlignment(Pos.CENTER);
+		buttonContainer.setPadding(new Insets(-50, 0, 20, 0));
+		centerLayout.getChildren().addAll(buttonContainer);
+		mainPane.setCenter(centerLayout);
 
 		return new Scene(mainPane, 1350, 650);
 	}
+
 
 	private void setBackground(BorderPane pane, String imagePath) {
 		// Load the image
@@ -410,15 +409,15 @@ public class BattleshipClient extends Application {
 			primaryStage.setScene(chooseScene());
 		});
 		leftButton.setStyle(
-				"-fx-font-size: 40px; " +  // Larger font size
-						"-fx-font-weight: bold; " +  // Bold font
-						"-fx-background-color: #03268f; " +  // Background color
-						"-fx-text-fill: white; " +  // Text color
-						"-fx-padding: 10 20 10 20; " +  // Padding around text
-						"-fx-background-radius: 15; " +  // Rounded corners
+				"-fx-font-size: 40px; " +
+						"-fx-font-weight: bold; " +
+						"-fx-background-color: #03268f; " +
+						"-fx-text-fill: white; " +
+						"-fx-padding: 10 20 10 20; " +
+						"-fx-background-radius: 15; " +
 
 						"-fx-font-family: 'Super Foods'; " +  // Font family
-						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
+						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"
 		);
 		BorderStroke borderStroke = new BorderStroke(
 				Paint.valueOf("black"), // Main border color
@@ -440,48 +439,51 @@ public class BattleshipClient extends Application {
 		rightButton.setStyle(
 				"-fx-font-size: 40px; " +
 						"-fx-font-weight: bold; " +
-						"-fx-background-color: #26bc1e; " +  // Bright green background for visibility
+						"-fx-background-color: #26bc1e; " +
 						"-fx-text-fill: white; " +
-						"-fx-padding: 10 20 10 20; " +  // Slightly increased padding
+						"-fx-padding: 10 20 10 20; " +
 						"-fx-background-radius: 15; " +
 						"-fx-font-family: 'Super Foods'; " +
 
 						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"
 		);
-		// Configure buttons with the same style as the PLAY button
+
 		leftButton.setMinSize(150, 75);
 		rightButton.setMinSize(150, 75);
 
-		// Add buttons to an HBox
-		HBox buttonContainer = new HBox(20); // 20 pixels spacing between buttons
+
+		HBox buttonContainer = new HBox(20);
 		buttonContainer.getChildren().addAll(leftButton, rightButton);
 		buttonContainer.setAlignment(Pos.CENTER);
 
-		// Use a VBox to stack label and button container
-		VBox centerContainer = new VBox(10);  // 10 pixels spacing between label and buttons
+
+		VBox centerContainer = new VBox(10);
 		centerContainer.getChildren().addAll(choiceLabel, buttonContainer);
 		centerContainer.setAlignment(Pos.CENTER);
-		centerContainer.setPadding(new Insets(100, 0, 0, 0));  // Move the entire container down by 100 pixels
+		centerContainer.setPadding(new Insets(100, 0, 0, 0));
 
-		// Set the VBox in the center of the BorderPane
 		pane.setCenter(centerContainer);
 
-		// Back button at the bottom
+
 		Button backButton = new Button("Back to Main");
 		backButton.setOnAction(e -> primaryStage.setScene(openScene()));
 		backButton.setStyle(
-				"-fx-font-size: 15px; " +  // Larger font size
-						"-fx-font-weight: bold; " +  // Bold font
-						"-fx-background-color: #333232; " +  // Background color
-						"-fx-text-fill: #f1f1f1; " +  // Text color
-						"-fx-padding: 10 20 10 20; " +  // Padding around text
-						"-fx-background-radius: 15; " +  // Rounded corners
-						"-fx-border-color: #000000; " +  // Border color
-						"-fx-border-width: 4; " +  // Border width
-						"-fx-border-radius: 5; " +  // Ensure this matches the background radius
+				"-fx-font-size: 15px; " +
+						"-fx-font-weight: bold; " +
+						"-fx-background-color: #333232; " +
+						"-fx-text-fill: #f1f1f1; " +
+						"-fx-padding: 10 20 10 20; " +
+						"-fx-background-radius: 15; " +
+						"-fx-border-color: #000000; " +
+						"-fx-border-width: 4; " +
+						"-fx-border-radius: 5; " +
 						"-fx-font-family: 'Super Foods'; " +
-						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
+						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"
 		);
+		TranslateTransition transition = new TranslateTransition(Duration.seconds(2), centerContainer);
+		transition.setFromY(-650);
+		transition.setToY(0);
+		transition.play();
 		pane.setBottom(backButton);
 		BorderPane.setAlignment(backButton, Pos.CENTER);
 
@@ -699,17 +701,17 @@ public class BattleshipClient extends Application {
 		// Back button at the bottom
 		Button backButton = new Button("Back to Main");
 		backButton.setStyle(
-				"-fx-font-size: 15px; " +  // Larger font size
-						"-fx-font-weight: bold; " +  // Bold font
-						"-fx-background-color: #333232; " +  // Background color
-						"-fx-text-fill: #f1f1f1; " +  // Text color
-						"-fx-padding: 10 20 10 20; " +  // Padding around text
-						"-fx-background-radius: 15; " +  // Rounded corners
-						"-fx-border-color: #000000; " +  // Border color
-						"-fx-border-width: 4; " +  // Border width
-						"-fx-border-radius: 5; " +  // Ensure this matches the background radius
+				"-fx-font-size: 15px; " +
+						"-fx-font-weight: bold; " +
+						"-fx-background-color: #333232; " +
+						"-fx-text-fill: #f1f1f1; " +
+						"-fx-padding: 10 20 10 20; " +
+						"-fx-background-radius: 15; " +
+						"-fx-border-color: #000000; " +
+						"-fx-border-width: 4; " +
+						"-fx-border-radius: 5; " +
 						"-fx-font-family: 'Super Foods'; " +
-						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
+						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"
 		);
 		backButton.setOnAction(e -> primaryStage.setScene(openScene()));
 		pane.setBottom(backButton);
@@ -1115,17 +1117,17 @@ public class BattleshipClient extends Application {
 		}
 		Button backButton = new Button("Forfeit");
 		backButton.setStyle(
-				"-fx-font-size: 15px; " +  // Larger font size
-						"-fx-font-weight: bold; " +  // Bold font
-						"-fx-background-color: #333232; " +  // Background color
-						"-fx-text-fill: #f1f1f1; " +  // Text color
-						"-fx-padding: 10 20 10 20; " +  // Padding around text
-						"-fx-background-radius: 15; " +  // Rounded corners
-						"-fx-border-color: #000000; " +  // Border color
-						"-fx-border-width: 4; " +  // Border width
-						"-fx-border-radius: 5; " +  // Ensure this matches the background radius
+				"-fx-font-size: 15px; " +
+						"-fx-font-weight: bold; " +
+						"-fx-background-color: #333232; " +
+						"-fx-text-fill: #f1f1f1; " +
+						"-fx-padding: 10 20 10 20; " +
+						"-fx-background-radius: 15; " +
+						"-fx-border-color: #000000; " +
+						"-fx-border-width: 4; " +
+						"-fx-border-radius: 5; " +
 						"-fx-font-family: 'Super Foods'; " +
-						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
+						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"
 		);
 		backButton.setOnAction(e -> {
 			resetShips();
