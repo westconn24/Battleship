@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -159,18 +156,18 @@ public class BattleshipClient extends Application {
 
 		Button playButton = new Button("PLAY");
 		playButton.setOnAction(e -> primaryStage.setScene(playerChoiceScene(primaryStage)));
-
+		Font.loadFont(Objects.requireNonNull(BattleshipClient.class.getResource("Super_Foods.ttf")).toExternalForm(), 30);
 		playButton.setStyle(
-				"-fx-font-size: 38px; " +  // Larger font size
+				"-fx-font-size: 45px; " +  // Larger font size
 						"-fx-font-weight: bold; " +  // Bold font
-						"-fx-background-color: black; " +  // Background color
-						"-fx-text-fill: white; " +  // Text color
+						"-fx-background-color: #333232; " +  // Background color
+						"-fx-text-fill: #f1f1f1; " +  // Text color
 						"-fx-padding: 10 20 10 20; " +  // Padding around text
 						"-fx-background-radius: 15; " +  // Rounded corners
-						"-fx-border-color: #afb0b3; " +  // Border color
+						"-fx-border-color: #000000; " +  // Border color
 						"-fx-border-width: 4; " +  // Border width
 						"-fx-border-radius: 5; " +  // Ensure this matches the background radius
-						"-fx-font-family: 'Lucida Fax'; " +
+						"-fx-font-family: 'Super Foods'; " +
 						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
 		);
 
@@ -389,10 +386,10 @@ public class BattleshipClient extends Application {
 	private Scene playerChoiceScene(Stage primaryStage) {
 		BorderPane pane = new BorderPane();
 		setBackground(pane, "battlebackground.png");
-
+		Font.loadFont(Objects.requireNonNull(BattleshipClient.class.getResource("Super_Foods.ttf")).toExternalForm(), 30);
 		// Create label and style it
 		Label choiceLabel = new Label("Choose who to play");
-		choiceLabel.setFont(new Font("Constantia", 30));
+		choiceLabel.setFont(Font.font("Super Foods", 60));
 		choiceLabel.setStyle("-fx-text-fill: white; -fx-padding: 10;");
 
 
@@ -413,14 +410,14 @@ public class BattleshipClient extends Application {
 			primaryStage.setScene(chooseScene());
 		});
 		leftButton.setStyle(
-				"-fx-font-size: 34px; " +  // Larger font size
+				"-fx-font-size: 40px; " +  // Larger font size
 						"-fx-font-weight: bold; " +  // Bold font
 						"-fx-background-color: #03268f; " +  // Background color
 						"-fx-text-fill: white; " +  // Text color
 						"-fx-padding: 10 20 10 20; " +  // Padding around text
 						"-fx-background-radius: 15; " +  // Rounded corners
 
-						"-fx-font-family: 'Constantia'; " +  // Font family
+						"-fx-font-family: 'Super Foods'; " +  // Font family
 						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
 		);
 		BorderStroke borderStroke = new BorderStroke(
@@ -441,13 +438,13 @@ public class BattleshipClient extends Application {
 		leftButton.setBorder(new Border(borderStroke));
 		rightButton.setBorder(new Border(borderStroke));
 		rightButton.setStyle(
-				"-fx-font-size: 34px; " +
+				"-fx-font-size: 40px; " +
 						"-fx-font-weight: bold; " +
 						"-fx-background-color: #26bc1e; " +  // Bright green background for visibility
 						"-fx-text-fill: white; " +
 						"-fx-padding: 10 20 10 20; " +  // Slightly increased padding
 						"-fx-background-radius: 15; " +
-						"-fx-font-family: 'Constantia'; " +
+						"-fx-font-family: 'Super Foods'; " +
 
 						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"
 		);
@@ -475,14 +472,14 @@ public class BattleshipClient extends Application {
 		backButton.setStyle(
 				"-fx-font-size: 15px; " +  // Larger font size
 						"-fx-font-weight: bold; " +  // Bold font
-						"-fx-background-color: black; " +  // Background color
-						"-fx-text-fill: white; " +  // Text color
+						"-fx-background-color: #333232; " +  // Background color
+						"-fx-text-fill: #f1f1f1; " +  // Text color
 						"-fx-padding: 10 20 10 20; " +  // Padding around text
 						"-fx-background-radius: 15; " +  // Rounded corners
-						"-fx-border-color: #afb0b3; " +  // Border color
+						"-fx-border-color: #000000; " +  // Border color
 						"-fx-border-width: 4; " +  // Border width
 						"-fx-border-radius: 5; " +  // Ensure this matches the background radius
-						"-fx-font-family: 'Lucida Fax'; " +
+						"-fx-font-family: 'Super Foods'; " +
 						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
 		);
 		pane.setBottom(backButton);
@@ -701,7 +698,19 @@ public class BattleshipClient extends Application {
 
 		// Back button at the bottom
 		Button backButton = new Button("Back to Main");
-		backButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: black; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 15; -fx-border-color: #afb0b3; -fx-border-width: 4; -fx-border-radius: 5; -fx-font-family: 'Lucida Fax'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+		backButton.setStyle(
+				"-fx-font-size: 15px; " +  // Larger font size
+						"-fx-font-weight: bold; " +  // Bold font
+						"-fx-background-color: #333232; " +  // Background color
+						"-fx-text-fill: #f1f1f1; " +  // Text color
+						"-fx-padding: 10 20 10 20; " +  // Padding around text
+						"-fx-background-radius: 15; " +  // Rounded corners
+						"-fx-border-color: #000000; " +  // Border color
+						"-fx-border-width: 4; " +  // Border width
+						"-fx-border-radius: 5; " +  // Ensure this matches the background radius
+						"-fx-font-family: 'Super Foods'; " +
+						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
+		);
 		backButton.setOnAction(e -> primaryStage.setScene(openScene()));
 		pane.setBottom(backButton);
 		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
@@ -1105,7 +1114,19 @@ public class BattleshipClient extends Application {
 			leftBoard.getChildren().get(front).setStyle("-fx-background-image: url('HorizontalFront-Cell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: transparent;");
 		}
 		Button backButton = new Button("Forfeit");
-		backButton.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-background-color: black; -fx-text-fill: white; -fx-padding: 10 20 10 20; -fx-background-radius: 15; -fx-border-color: #afb0b3; -fx-border-width: 4; -fx-border-radius: 5; -fx-font-family: 'Lucida Fax'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+		backButton.setStyle(
+				"-fx-font-size: 15px; " +  // Larger font size
+						"-fx-font-weight: bold; " +  // Bold font
+						"-fx-background-color: #333232; " +  // Background color
+						"-fx-text-fill: #f1f1f1; " +  // Text color
+						"-fx-padding: 10 20 10 20; " +  // Padding around text
+						"-fx-background-radius: 15; " +  // Rounded corners
+						"-fx-border-color: #000000; " +  // Border color
+						"-fx-border-width: 4; " +  // Border width
+						"-fx-border-radius: 5; " +  // Ensure this matches the background radius
+						"-fx-font-family: 'Super Foods'; " +
+						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"  // Shadow effect
+		);
 		backButton.setOnAction(e -> {
 			resetShips();
 			numPlayerCellsDestroyed = 0;
