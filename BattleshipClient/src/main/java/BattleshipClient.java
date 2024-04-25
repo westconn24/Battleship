@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
@@ -14,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.image.Image;
 import javafx.scene.shape.StrokeLineCap;
@@ -493,14 +494,144 @@ public class BattleshipClient extends Application {
 
 	private void connectToServer() {
 		// Create the client with a callback to handle messages received from the server
+		// Set the background for the pane
+		BorderPane pane = new BorderPane();
+		game = new boardSetup();
+		setBackground(pane, "battlebackground.png");
+
+		GridPane grid = new GridPane();
+		grid.setPadding(new Insets(2, 2, 2, 2)); // Margin around the grid
+		grid.setVgap(5); // Vertical gap between buttons
+		grid.setHgap(5); // Horizontal gap between buttons
+		grid.setAlignment(Pos.CENTER); // Center alignment for the GridPane within the BorderPane
+		HBox boards = new HBox(grid);
+		pane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+			if (event.getCode() == KeyCode.Z) {
+				removeGridCellBackground(game.currRowHover, game.currColHover, grid);
+				game.toggleOrientation();
+				setGridCellBackground(grid, game.currRowHover, game.currColHover);
+				System.out.println("hi");
+				event.consume();
+			}
+		});
+		// Create buttons and add them to the grid
+		for (int r = 0; r < 10; r++) {
+			for (int c = 0; c < 10; c++) {
+				cellButton button = new cellButton();
+				button.setPrefSize(45, 45); // Increased size by 15pt
+				button.setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;"); // Transparent background with a white outline
+				int finalRow = r;
+				int finalCol = c;
+				button.setOnMouseClicked(e -> handleOnlineButtonClick(finalRow, finalCol, grid ));
+				button.setOnMouseEntered(e -> handleButtonHover(finalRow, finalCol, grid));
+				button.setOnMouseExited(e -> handleButtonExit(finalRow, finalCol, grid));
+				grid.add(button, finalCol, finalRow);
+			}
+		}
+
+		// Adding the grid to the center of the BorderPane
+		boards.setAlignment(Pos.CENTER);
+		boards.setSpacing(15);
+		pane.setCenter(boards);
+
+		Scene settPieces = new Scene(pane, 1350, 650);
+
+		AtomicReference<Boolean> turn = new AtomicReference<>(true);
+		GridPane attackBoard = new GridPane();
+		attackBoard.setPadding(new Insets(2, 2, 2, 2)); // Margin around the grid
+		attackBoard.setVgap(5); // Vertical gap between buttons
+		attackBoard.setHgap(5); // Horizontal gap between buttons
+		attackBoard.setAlignment(Pos.CENTER); // Center alignment for the GridPane within the BorderPane
+		for (int r = 0; r < 10; r++) {
+			for (int c = 0; c < 10; c++) {
+				cellButton button = new cellButton();
+				button.setPrefSize(45, 45); // Increased size by 15pt
+				button.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;"); // Transparent background with a white outline
+				int finalRow = r;
+				int finalCol = c;
+				button.setOnMouseClicked(e -> {
+					if (turn.get() == true){
+						clientConnection.send("cord" + finalRow + finalCol);
+					}
+				});
+				attackBoard.add(button, finalCol, finalRow);
+			}
+		}
+
+		AtomicInteger hits = new AtomicInteger();
+
 		clientConnection = new Client(data -> {
 			// Since the data is of type Serializable, ensure proper handling
 			if (data != null) {
+				String dataStr = data.toString();
+				String opReady = "no";
+				String pReady = "no";
+				System.out.println(dataStr);
+				int opponent;
 				if (data.equals("OddCount")) {
 					Platform.runLater(() -> {
 						primaryStage.setScene(createWaitingScene());
 					});
+				} else if (dataStr.charAt(0) == 'o' && dataStr.charAt(1) == 'p'){
+					String num = "";
+					for (int i = 2; i < dataStr.length();i++){
+						num += dataStr.charAt(i);
+					}
+					opponent = Integer.parseInt(num);
+
+					Platform.runLater(() -> {
+						primaryStage.setScene(settPieces);
+					});
+				} else if (dataStr.equals("self")){ //Ignore this it's just to add the attack board once all players have set their boats
+					pReady = "yes";
+				} else if (data.equals("wait")){
+					turn.set(false);
+				} else if (dataStr.charAt(0) == 'c' && dataStr.charAt(1) == 'o' && dataStr.charAt(2) == 'r' && dataStr.charAt(3) == 'd'){ //let opponent know if they missed or hit
+					turn.set(true);
+					int row = Character.getNumericValue(dataStr.charAt(4));
+					int col = Character.getNumericValue(dataStr.charAt(5));
+					cellButton temp = (cellButton) grid.getChildren().get( (row * 10) + col);
+					if (temp.emptyStatus){
+						clientConnection.send("miss" + row + col);
+						temp.setStyle("-fx-background-color: grey; -fx-border-color: white; -fx-border-width: 1px;");
+					} else {
+						 clientConnection.send("hit" + row + col);
+						temp.setStyle("-fx-background-color: grey; -fx-border-color: blue; -fx-border-width: 1px;");
+					}
+				}  else if (dataStr.charAt(0) == 'm' && dataStr.charAt(1) == 'i' && dataStr.charAt(2) == 's' && dataStr.charAt(3) == 's'){ //you miss
+					int row = Character.getNumericValue(dataStr.charAt(4));
+					int col = Character.getNumericValue(dataStr.charAt(5));
+					cellButton temp = (cellButton) attackBoard.getChildren().get( (row * 10) + col);
+					temp.setDisable(true);
+					temp.setStyle("-fx-background-color: grey; -fx-border-color: white; -fx-border-width: 1px;");
+				} else if (dataStr.charAt(0) == 'h' && dataStr.charAt(1) == 'i' && dataStr.charAt(2) == 't'){ //you hit
+					int row = Character.getNumericValue(dataStr.charAt(3));
+					int col = Character.getNumericValue(dataStr.charAt(4));
+					cellButton temp = (cellButton) attackBoard.getChildren().get( (row * 10) + col);
+					temp.setDisable(true);
+					temp.setStyle("-fx-background-color: grey; -fx-border-color: red; -fx-border-width: 1px;");
+					hits.getAndIncrement();
+					if (hits.get() == 17){
+						clientConnection.send("loser");
+						Platform.runLater(() -> {
+							showGameOverImage(true);
+						});
+					}
+				} else if (data.equals("ready")){ //other player is ready
+					opReady = "yes";
+				} else if (data.equals("loser")){
+					Platform.runLater(() -> {
+						showGameOverImage(false);
+					});
 				}
+
+				if (opReady.equals("yes")){
+					Platform.runLater(() -> {
+						boards.getChildren().add(attackBoard);
+					});
+				}
+
+
 				// Handle other messages if needed
 			}
 		}, this);
@@ -588,6 +719,116 @@ public class BattleshipClient extends Application {
 	private void handleButtonExit(int row, int col, GridPane grid) {
 		if (((cellButton) grid.getChildren().get((row * 10) + col)).emptyStatus) {
 			removeGridCellBackground(row, col, grid);
+		}
+	}
+
+	private void handleOnlineButtonClick(int row, int col, GridPane grid) {
+		System.out.println("Button clicked at row " + row + ", col " + col);
+		cellButton checkEmpty = (cellButton) grid.getChildren().get(((row) * 10) + col);
+		if (!checkEmpty.emptyStatus) {//button clicked already has a boat nothing to do
+			return;
+		}
+
+		cellButton checkBadCell = (cellButton) grid.getChildren().get((row * 10) + col);
+		String backgroundImage = checkBadCell.getStyle();
+		if (backgroundImage != null && backgroundImage.contains("BadCell.png")) { //BadCell so do nothing
+			return;
+		}
+
+		if (game.isVertical) {
+			if (game.currPieceIndex == 0) { //disabling button action while preserving css
+				cellButton temp = (cellButton) grid.getChildren().get(((row - 2) * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row + 2) * 10) + col);
+				temp.emptyStatus = false;
+				ships[0] = new Ship(5, ((row - 2) * 10) + col, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, ((row + 2) * 10) + col, true);
+				game.piecePlaced();
+			} else if (game.currPieceIndex == 1) {
+				cellButton temp = (cellButton) grid.getChildren().get(((row - 2) * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
+				temp.emptyStatus = false;
+				ships[1] = new Ship(4, ((row - 2) * 10) + col, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, true);
+				game.piecePlaced();
+			} else if (game.currPieceIndex == 2 || game.currPieceIndex == 3) {
+				cellButton temp = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row + 1) * 10) + col);
+				temp.emptyStatus = false;
+				if (ships[2] == null) {
+					ships[2] = new Ship(3, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, true);
+				} else {
+					ships[3] = new Ship(3, ((row - 1) * 10) + col, (row * 10) + col, ((row + 1) * 10) + col, true);
+				}
+				game.piecePlaced();
+			} else if (game.currPieceIndex == 4) {
+				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get(((row - 1) * 10) + col);
+				temp.emptyStatus = false;
+				ships[4] = new Ship(2, ((row - 1) * 10) + col, (row * 10) + col, true);
+				game.piecePlaced();
+			}
+		} else {
+			if (game.currPieceIndex == 0) {
+				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col - 2);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col - 1);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 2);
+				temp.emptyStatus = false;
+				ships[0] = new Ship(5, (row * 10) + col - 2, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, (row * 10) + col + 2, false);
+				game.piecePlaced();
+			} else if (game.currPieceIndex == 1) {
+				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col - 2);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col - 1);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+				temp.emptyStatus = false;
+				ships[1] = new Ship(4, (row * 10) + col - 2, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, false);
+				game.piecePlaced();
+			} else if (game.currPieceIndex == 2 || game.currPieceIndex == 3) {
+				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col - 1);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+				temp.emptyStatus = false;
+				if (ships[2] == null) {
+					ships[2] = new Ship(3, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, false);
+				} else {
+					ships[3] = new Ship(3, (row * 10) + col - 1, (row * 10) + col, (row * 10) + col + 1, false);
+				}
+				game.piecePlaced();
+			} else if (game.currPieceIndex == 4) {
+				cellButton temp = (cellButton) grid.getChildren().get((row * 10) + col);
+				temp.emptyStatus = false;
+				temp = (cellButton) grid.getChildren().get((row * 10) + col + 1);
+				temp.emptyStatus = false;
+				ships[4] = new Ship(2, (row * 10) + col, (row * 10) + col + 1, false);
+				game.piecePlaced();
+				clientConnection.send("self");
+				clientConnection.send("ready");
+			}
 		}
 	}
 

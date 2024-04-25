@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 import javafx.application.Platform;
@@ -18,6 +19,8 @@ public class Server{
 
 	int count = 1;
 	ArrayList<ClientThread> clients = new ArrayList<ClientThread>();
+	ArrayList<Integer> pendingPlayers = new ArrayList<>();
+	HashMap<Integer, Integer> matches = new HashMap<>();
 	TheServer server;
 	private Consumer<Serializable> callback;
 
@@ -78,6 +81,14 @@ public class Server{
 				catch(Exception e) {}
 			}
 		}
+
+		public void updateClient(String message, int thread) {
+			ClientThread t = clients.get(thread);
+			try {
+				t.out.writeObject(message);
+			} catch (Exception e) {
+			}
+		}
 		public void sendClientCount() {
 			try {
 				out.writeObject(clients.size());
@@ -95,25 +106,47 @@ public class Server{
 				out = new ObjectOutputStream(connection.getOutputStream());
 				connection.setTcpNoDelay(true);
 
-				updateClients("new client on server: client #" + count);
-
 				while (true) {
 					try {
 						String data = in.readObject().toString();
 						callback.accept("client: " + count + " sent: " + data);
-						updateClients("client #" + count + " said: " + data);
 
 						if (data.equals("getClientCount")) {
 							this.sendClientCount();
 							if (this.isClientCountOdd()) {
 								// Notify client if count is odd
+								pendingPlayers.add(count);
 								this.out.writeObject("OddCount");
+							} else {
+								String matchup = "op" + count;
+								int oppThread = pendingPlayers.remove(0);
+								updateClient(matchup, oppThread - 1); //adjustment because of 0-based indexes
+								matchup = "op" + oppThread;
+								updateClient(matchup, count - 1);
+								updateClient("wait", count - 1);
+								matches.put(count, oppThread);
+								matches.put(oppThread, count);
 							}
+						} else if (data.equals("ready")){
+							updateClient("ready", matches.get(count) - 1); //both are needed
+						} else if (data.charAt(0) == 'c' && data.charAt(1) == 'o' && data.charAt(2) == 'r' && data.charAt(3) == 'd'){
+							updateClient(data, matches.get(count) - 1);
+							updateClient("wait", count - 1);
+						} else if (data.charAt(0) == 'm' && data.charAt(1) == 'i' && data.charAt(2) == 's' && data.charAt(3) == 's'){
+							updateClient(data, matches.get(count) - 1);
+						} else if (data.charAt(0) == 'h' && data.charAt(1) == 'i' && data.charAt(2) == 't'){
+							updateClient(data, matches.get(count) - 1);
+						} else if (data.equals("loser")){
+							updateClient("loser", matches.get(count)-1);
 						}
 					} catch (Exception e) {
+						System.out.println(e.getMessage());
 						callback.accept("OOOOPPs...Something wrong with the socket from client: " + count + "....closing down!");
-						updateClients("Client #" + count + " has left the server!");
-						clients.remove(this);
+						for (int i = 0; i < pendingPlayers.size(); i++){
+							if (pendingPlayers.get(i) == count){
+								pendingPlayers.remove(i);
+							}
+						}
 						break;
 					}
 				}
