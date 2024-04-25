@@ -1174,7 +1174,7 @@ public class BattleshipClient extends Application {
 
 		if (hit) {
 			if (!boatDestroyed){
-				cell.setStyle("-fx-background-image: url('deadcell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: white;  -fx-border-color: blue; -fx-border-width: 2px;");
+				cell.setStyle("-fx-background-image: url('deadcell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: white; -fx-border-color: blue; -fx-border-width: 2px;");
 				System.out.println("Player hit at " + row + ", " + col);
 			} else {
 				boatDestroyed = false;
@@ -1222,13 +1222,13 @@ public class BattleshipClient extends Application {
 
 		if (hit) {
 			if (!boatDestroyed){
-				currButton.setStyle("-fx-background-color: red; -fx-border-color: white; -fx-border-width: 1px;");
+				currButton.setStyle("-fx-background-image: url('deadcell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: white; -fx-border-color: blue; -fx-border-width: 2px;");
 				System.out.println("CPU hit at " + row + ", " + col);
 			} else {
 				boatDestroyed = false;
 			}
 		} else {
-			currButton.setStyle("-fx-background-color: lightgray; -fx-border-color: white; -fx-border-width: 1px;");
+			currButton.setStyle("-fx-background-image: url('misscell.png'); -fx-background-position: center; -fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 1px;");
 			System.out.println("CPU miss at " + row + ", " + col);
 		}
 
