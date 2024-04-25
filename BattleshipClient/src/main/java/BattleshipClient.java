@@ -933,12 +933,12 @@ public class BattleshipClient extends Application {
 
 
 		if (areAllShipsDestroyed(shipsStatus)) {
-			resetGrid(grid); // reset enemy cpu grid
+			resetGrid(grid); // reset enemy cpu and player grids
 			resetShips();
 			numPlayerCellsDestroyed = 0;
 			showGameOverImage(true);  // Player win
 		} else if (numPlayerCellsDestroyed == 17) {
-			resetGrid(grid); // reset enemy cpu grid
+			resetGrid(grid); // reset enemy cpu and player grids
 			resetShips();
 			numPlayerCellsDestroyed = 0;
 			showGameOverImage(false);  // Player win
@@ -1072,10 +1072,11 @@ public class BattleshipClient extends Application {
 	}
 
 	private void resetGrid(GridPane grid) {
-		// Clear the state of the enemy grid's ship placements
+		// Clear the state of the enemy cpu and player grid's ship placements
 		for (int i = 0; i < 10; i++) {
 			for (int j = 0; j < 10; j++) {
 				enemyCpuGrid[i][j] = false;
+				playerGrid[i][j] = false;
 				shipAtPosition[i][j] = 0; // Reset ship tracking
 			}
 		}
