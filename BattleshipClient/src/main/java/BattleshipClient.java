@@ -634,7 +634,24 @@ public class BattleshipClient extends Application {
 				// Handle other messages if needed
 			}
 		}, this);
+		Label rotateLabel = new Label("Press Z to rotate");
+		rotateLabel.setStyle("-fx-font-size: 35px; " +
+				"-fx-font-weight: bold; " +
+				"-fx-text-fill: black; " +
+				"-fx-font-family: 'Super Foods'; ");
 
+		// HBox for the bottom layout
+		HBox bottomLayout = new HBox();
+		bottomLayout.setAlignment(Pos.CENTER_LEFT); // Align the content to the left center
+		bottomLayout.setPadding(new Insets(0, 0, 10, 10)); // Padding to ensure the button aligns to the bottom left
+
+		// StackPane to allow overlay of elements
+		StackPane bottomContainer = new StackPane();
+		bottomContainer.getChildren().addAll(bottomLayout, rotateLabel);
+		StackPane.setAlignment(rotateLabel, Pos.BOTTOM_CENTER); // Center the label at the bottom
+		StackPane.setAlignment(bottomLayout, Pos.BOTTOM_LEFT); // Align the button to the bottom left
+
+		pane.setBottom(bottomContainer);
 		// Start the client thread to listen for messages from the server
 		clientConnection.start();
 	}
@@ -714,8 +731,25 @@ public class BattleshipClient extends Application {
 						"-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);"
 		);
 		backButton.setOnAction(e -> primaryStage.setScene(openScene()));
-		pane.setBottom(backButton);
-		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
+		Label rotateLabel = new Label("Press Z to rotate");
+		rotateLabel.setStyle("-fx-font-size: 35px; " +
+				"-fx-font-weight: bold; " +
+				"-fx-text-fill: black; " +
+				"-fx-font-family: 'Super Foods'; ");
+
+		// HBox for the bottom layout
+		HBox bottomLayout = new HBox();
+		bottomLayout.setAlignment(Pos.CENTER_LEFT); // Align the content to the left center
+		bottomLayout.setPadding(new Insets(0, 0, 10, 10)); // Padding to ensure the button aligns to the bottom left
+		bottomLayout.getChildren().add(backButton);
+
+		// StackPane to allow overlay of elements
+		StackPane bottomContainer = new StackPane();
+		bottomContainer.getChildren().addAll(bottomLayout, rotateLabel);
+		StackPane.setAlignment(rotateLabel, Pos.BOTTOM_CENTER); // Center the label at the bottom
+		StackPane.setAlignment(bottomLayout, Pos.BOTTOM_LEFT); // Align the button to the bottom left
+
+		pane.setBottom(bottomContainer);
 
 		return new Scene(pane, 1350, 650);
 	}
@@ -1137,6 +1171,7 @@ public class BattleshipClient extends Application {
 
 			resetGrid(rightBoard); // reset enemy cpu grid
 		});
+
 		gamePane.setBottom(backButton);
 		BorderPane.setAlignment(backButton, Pos.BOTTOM_LEFT);
 		boardsContainer.getChildren().addAll(leftBoard, rightBoard);
