@@ -1158,7 +1158,7 @@ public class BattleshipClient extends Application {
 				enemyCell.setPrefSize(40, 40);
 				enemyCell.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;");
 				if (enemyCpuGrid[row][col]) {
-					enemyCell.setStyle("-fx-background-color: darkgray;"); // Visual cue for debugging
+					//enemyCell.setStyle("-fx-background-color: darkgray;"); // Visual cue for debugging
 				}
 				int finalRow = row;
 				int finalCol = col;
@@ -1222,7 +1222,7 @@ public class BattleshipClient extends Application {
 
 		if (hit) {
 			if (!boatDestroyed){
-				currButton.setStyle("-fx-background-image: url('deadcell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: white; -fx-border-color: blue; -fx-border-width: 2px;");
+				currButton.setStyle("-fx-background-image: url('deadcell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: white; -fx-border-color: red; -fx-border-width: 2px;");
 				System.out.println("CPU hit at " + row + ", " + col);
 			} else {
 				boatDestroyed = false;
