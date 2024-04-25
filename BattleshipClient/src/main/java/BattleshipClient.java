@@ -593,23 +593,23 @@ public class BattleshipClient extends Application {
 					cellButton temp = (cellButton) grid.getChildren().get( (row * 10) + col);
 					if (temp.emptyStatus){
 						clientConnection.send("miss" + row + col);
-						temp.setStyle("-fx-background-color: grey; -fx-border-color: white; -fx-border-width: 1px;");
+						temp.setStyle("-fx-background-image: url('misscell.png'); -fx-background-position: center; -fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 1px;");
 					} else {
 						 clientConnection.send("hit" + row + col);
-						temp.setStyle("-fx-background-color: grey; -fx-border-color: blue; -fx-border-width: 1px;");
+						temp.setStyle("-fx-background-image: url('deadcell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: white;  -fx-border-color: blue; -fx-border-width: 2px;");
 					}
 				}  else if (dataStr.charAt(0) == 'm' && dataStr.charAt(1) == 'i' && dataStr.charAt(2) == 's' && dataStr.charAt(3) == 's'){ //you miss
 					int row = Character.getNumericValue(dataStr.charAt(4));
 					int col = Character.getNumericValue(dataStr.charAt(5));
 					cellButton temp = (cellButton) attackBoard.getChildren().get( (row * 10) + col);
 					temp.setDisable(true);
-					temp.setStyle("-fx-background-color: grey; -fx-border-color: white; -fx-border-width: 1px;");
+					temp.setStyle("-fx-background-image: url('misscell.png'); -fx-background-position: center; -fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 1px;");
 				} else if (dataStr.charAt(0) == 'h' && dataStr.charAt(1) == 'i' && dataStr.charAt(2) == 't'){ //you hit
 					int row = Character.getNumericValue(dataStr.charAt(3));
 					int col = Character.getNumericValue(dataStr.charAt(4));
 					cellButton temp = (cellButton) attackBoard.getChildren().get( (row * 10) + col);
 					temp.setDisable(true);
-					temp.setStyle("-fx-background-color: grey; -fx-border-color: red; -fx-border-width: 1px;");
+					temp.setStyle("-fx-background-image: url('deadcell.png'); -fx-background-repeat: no-repeat; -fx-background-position: center; -fx-background-color: white;  -fx-border-color: red; -fx-border-width: 2px;");
 					hits.getAndIncrement();
 					if (hits.get() == 17){
 						clientConnection.send("loser");
@@ -780,6 +780,8 @@ public class BattleshipClient extends Application {
 				temp.emptyStatus = false;
 				ships[4] = new Ship(2, ((row - 1) * 10) + col, (row * 10) + col, true);
 				game.piecePlaced();
+				clientConnection.send("self");
+				clientConnection.send("ready");
 			}
 		} else {
 			if (game.currPieceIndex == 0) {
