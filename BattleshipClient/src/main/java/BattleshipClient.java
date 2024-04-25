@@ -1132,7 +1132,8 @@ public class BattleshipClient extends Application {
 		backButton.setOnAction(e -> {
 			resetShips();
 			numPlayerCellsDestroyed = 0;
-			primaryStage.setScene(openScene());
+			//primaryStage.setScene(openScene());
+			showGameOverImage(false);
 
 			resetGrid(rightBoard); // reset enemy cpu grid
 		});
@@ -1207,7 +1208,7 @@ public class BattleshipClient extends Application {
 			resetGrid(grid); // reset enemy cpu and player grids
 			resetShips();
 			numPlayerCellsDestroyed = 0;
-			showGameOverImage(false);  // Player win
+			showGameOverImage(false);  // Player lost
 		}
 
 	}
