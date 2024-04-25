@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -22,6 +23,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.w3c.dom.Text;
 
 class ShipStatus {
 	int size;
@@ -558,7 +560,14 @@ public class BattleshipClient extends Application {
 		}
 
 		AtomicInteger hits = new AtomicInteger();
+		Label prompt = new Label();
+		prompt.setStyle("-fx-font-size: 35px; " +
+				"-fx-font-weight: bold; " +
+				"-fx-text-fill: black; " +
+				"-fx-font-family: 'Super Foods'; ");
+		pane.setTop(prompt);
 
+		AtomicBoolean opponentReady = new AtomicBoolean(false);
 		clientConnection = new Client(data -> {
 			// Since the data is of type Serializable, ensure proper handling
 			if (data != null) {
@@ -585,8 +594,14 @@ public class BattleshipClient extends Application {
 					pReady = "yes";
 				} else if (data.equals("wait")){
 					turn.set(false);
+					Platform.runLater(() -> {
+						prompt.setText("opponent turn");
+					});
 				} else if (dataStr.charAt(0) == 'c' && dataStr.charAt(1) == 'o' && dataStr.charAt(2) == 'r' && dataStr.charAt(3) == 'd'){ //let opponent know if they missed or hit
 					turn.set(true);
+					Platform.runLater(() -> {
+						prompt.setText("your turn");
+					});
 					int row = Character.getNumericValue(dataStr.charAt(4));
 					int col = Character.getNumericValue(dataStr.charAt(5));
 					cellButton temp = (cellButton) grid.getChildren().get( (row * 10) + col);
