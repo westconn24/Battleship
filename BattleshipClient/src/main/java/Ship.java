@@ -38,13 +38,6 @@ public class Ship {
         this.front = front;
         this.isVertical = isVertical;
     }
-    public String getType() {
-        return type;
-    }
-
-    public int getLength() {
-        return length;
-    }
 
     public int getBack() {
         return back;

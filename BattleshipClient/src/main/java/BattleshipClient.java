@@ -23,7 +23,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.w3c.dom.Text;
+
 
 class ShipStatus {
 	int size;
@@ -48,13 +48,7 @@ class ShipStatus {
 
 public class BattleshipClient extends Application {
 	boardSetup game;
-	private TextField textField;
-	private BorderPane mainPane;
-	private Button sendButton, sendAllButton, createGroupButton, viewMembersButton, viewGroupsButton;
-	private Label label;
-	private HashMap<String, Scene> scenes;
-	private VBox mainBox;
-	private HBox buttonBox;
+
 	private Stage primaryStage;
 	Client clientConnection;
 	public Ship[] ships = new Ship[5];
@@ -123,7 +117,7 @@ public class BattleshipClient extends Application {
 		}
 	}
 
-	;
+
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -539,14 +533,14 @@ public class BattleshipClient extends Application {
 
 		AtomicReference<Boolean> turn = new AtomicReference<>(true);
 		GridPane attackBoard = new GridPane();
-		attackBoard.setPadding(new Insets(2, 2, 2, 2)); // Margin around the grid
-		attackBoard.setVgap(5); // Vertical gap between buttons
-		attackBoard.setHgap(5); // Horizontal gap between buttons
-		attackBoard.setAlignment(Pos.CENTER); // Center alignment for the GridPane within the BorderPane
+		attackBoard.setPadding(new Insets(2, 2, 2, 2));
+		attackBoard.setVgap(5);
+		attackBoard.setHgap(5);
+		attackBoard.setAlignment(Pos.CENTER);
 		for (int r = 0; r < 10; r++) {
 			for (int c = 0; c < 10; c++) {
 				cellButton button = new cellButton();
-				button.setPrefSize(45, 45); // Increased size by 15pt
+				button.setPrefSize(45, 45);
 				button.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-border-width: 2px;"); // Transparent background with a white outline
 				int finalRow = r;
 				int finalCol = c;
@@ -655,19 +649,18 @@ public class BattleshipClient extends Application {
 				"-fx-text-fill: black; " +
 				"-fx-font-family: 'Super Foods'; ");
 
-		// HBox for the bottom layout
-		HBox bottomLayout = new HBox();
-		bottomLayout.setAlignment(Pos.CENTER_LEFT); // Align the content to the left center
-		bottomLayout.setPadding(new Insets(0, 0, 10, 10)); // Padding to ensure the button aligns to the bottom left
 
-		// StackPane to allow overlay of elements
+		HBox bottomLayout = new HBox();
+		bottomLayout.setAlignment(Pos.CENTER_LEFT);
+		bottomLayout.setPadding(new Insets(0, 0, 10, 10));
+
 		StackPane bottomContainer = new StackPane();
 		bottomContainer.getChildren().addAll(bottomLayout, rotateLabel);
-		StackPane.setAlignment(rotateLabel, Pos.BOTTOM_CENTER); // Center the label at the bottom
-		StackPane.setAlignment(bottomLayout, Pos.BOTTOM_LEFT); // Align the button to the bottom left
+		StackPane.setAlignment(rotateLabel, Pos.BOTTOM_CENTER);
+		StackPane.setAlignment(bottomLayout, Pos.BOTTOM_LEFT);
 
 		pane.setBottom(bottomContainer);
-		// Start the client thread to listen for messages from the server
+
 		clientConnection.start();
 	}
 
@@ -699,10 +692,10 @@ public class BattleshipClient extends Application {
 		setBackground(pane, "battlebackground.png");
 
 		GridPane grid = new GridPane();
-		grid.setPadding(new Insets(2, 2, 2, 2)); // Margin around the grid
-		grid.setVgap(5); // Vertical gap between buttons
-		grid.setHgap(5); // Horizontal gap between buttons
-		grid.setAlignment(Pos.CENTER); // Center alignment for the GridPane within the BorderPane
+		grid.setPadding(new Insets(2, 2, 2, 2));
+		grid.setVgap(5);
+		grid.setHgap(5);
+		grid.setAlignment(Pos.CENTER);
 		pane.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 			if (event.getCode() == KeyCode.Z) {
 				removeGridCellBackground(game.currRowHover, game.currColHover, grid);
@@ -712,11 +705,11 @@ public class BattleshipClient extends Application {
 				event.consume();
 			}
 		});
-		// Create buttons and add them to the grid
+
 		for (int row = 0; row < 10; row++) {
 			for (int col = 0; col < 10; col++) {
 				cellButton button = new cellButton();
-				button.setPrefSize(45, 45); // Increased size by 15pt
+				button.setPrefSize(45, 45);
 				button.setStyle("-fx-background-color: transparent; -fx-border-color: white; -fx-border-width: 2px;"); // Transparent background with a white outline
 				int finalRow = row;
 				int finalCol = col;
@@ -727,10 +720,10 @@ public class BattleshipClient extends Application {
 			}
 		}
 
-		// Adding the grid to the center of the BorderPane
+
 		pane.setCenter(grid);
 
-		// Back button at the bottom
+
 		Button backButton = new Button("Back to Main");
 		backButton.setStyle(
 				"-fx-font-size: 15px; " +
@@ -752,17 +745,17 @@ public class BattleshipClient extends Application {
 				"-fx-text-fill: black; " +
 				"-fx-font-family: 'Super Foods'; ");
 
-		// HBox for the bottom layout
+
 		HBox bottomLayout = new HBox();
-		bottomLayout.setAlignment(Pos.CENTER_LEFT); // Align the content to the left center
-		bottomLayout.setPadding(new Insets(0, 0, 10, 10)); // Padding to ensure the button aligns to the bottom left
+		bottomLayout.setAlignment(Pos.CENTER_LEFT);
+		bottomLayout.setPadding(new Insets(0, 0, 10, 10));
 		bottomLayout.getChildren().add(backButton);
 
-		// StackPane to allow overlay of elements
+
 		StackPane bottomContainer = new StackPane();
 		bottomContainer.getChildren().addAll(bottomLayout, rotateLabel);
-		StackPane.setAlignment(rotateLabel, Pos.BOTTOM_CENTER); // Center the label at the bottom
-		StackPane.setAlignment(bottomLayout, Pos.BOTTOM_LEFT); // Align the button to the bottom left
+		StackPane.setAlignment(rotateLabel, Pos.BOTTOM_CENTER);
+		StackPane.setAlignment(bottomLayout, Pos.BOTTOM_LEFT);
 
 		pane.setBottom(bottomContainer);
 

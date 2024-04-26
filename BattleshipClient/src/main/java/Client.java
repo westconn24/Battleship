@@ -65,7 +65,4 @@ public class Client extends Thread{
 		}
 	}
 
-	private void triggerSceneChange() {
-		battleshipClient.showWaitingScene(); // Call method in BattleshipClient to switch scene
-	}
 }
