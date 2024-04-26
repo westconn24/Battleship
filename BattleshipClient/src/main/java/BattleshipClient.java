@@ -24,6 +24,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/* Battleship game developed by Jason Merino-Garcia, Josh Julian and Connor West*/
+
 
 class ShipStatus {
 	int size;
